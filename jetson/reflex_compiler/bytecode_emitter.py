@@ -12,6 +12,7 @@ Instruction format (8 bytes, little-endian):
 
 from __future__ import annotations
 
+import math
 import struct
 from typing import TYPE_CHECKING
 
@@ -58,6 +59,68 @@ def float_to_u32(value: float) -> int:
 def u32_to_float(value: int) -> float:
     """Convert a uint32 to float32."""
     return struct.unpack("<f", struct.pack("<I", value))[0]
+
+
+def f32_to_f16_bits(value: float) -> int:
+    """Convert a float32 to IEEE 754 float16 bit pattern.
+
+    Matches the C firmware's f16_to_f32_bits() decoder in reverse.
+    float16: 1 sign bit, 5 exponent bits (bias 15), 10 mantissa bits.
+    """
+    if math.isnan(value) or math.isinf(value):
+        f32_bits = float_to_u32(value)
+        sign = (f32_bits >> 31) & 1
+        if math.isnan(value):
+            return (sign << 15) | 0x7E00 | 1  # quiet NaN
+        else:
+            return (sign << 15) | 0x7C00  # Inf
+
+    if value == 0.0:
+        f32_bits = float_to_u32(value)
+        sign = (f32_bits >> 31) & 1
+        return sign << 15
+
+    sign = 0
+    if value < 0:
+        sign = 1
+        value = -value
+
+    f32_bits = float_to_u32(value)
+    f32_exp = (f32_bits >> 23) & 0xFF
+    f32_mant = f32_bits & 0x7FFFFF
+
+    # float32 exponent bias = 127, float16 exponent bias = 15
+    f16_exp = f32_exp - 127 + 15
+
+    if f32_exp == 0:
+        # float32 denormal — become float16 denormal
+        return sign << 15
+    elif f32_exp == 255:
+        return (sign << 15) | 0x7C00
+
+    if f16_exp >= 31:
+        # Overflow to Inf
+        return (sign << 15) | 0x7C00
+
+    if f16_exp <= 0:
+        # Underflow to denormal
+        shift = 1 - f16_exp
+        mant = (0x400 | (f32_mant >> 13)) >> shift
+        round_bit = (0x400 | (f32_mant >> 13)) & ((1 << shift) - 1)
+        half = 1 << (shift - 1)
+        if round_bit > half or (round_bit == half and (mant & 1)):
+            mant += 1
+        return (sign << 15) | (mant & 0x3FF)
+
+    # Normal case: 10-bit mantissa from 23-bit float32 mantissa
+    mant = (f32_mant + 0x1000) >> 13  # round to nearest even
+    if mant >= 0x400:
+        mant = 0x400
+        f16_exp += 1
+        if f16_exp >= 31:
+            return (sign << 15) | 0x7C00
+
+    return (sign << 15) | ((f16_exp & 0x1F) << 10) | (mant & 0x3FF)
 
 
 class BytecodeEmitter:
@@ -136,12 +199,15 @@ class BytecodeEmitter:
         self.emit_raw(0x0F, 0x00, 0, 0)
 
     def emit_clamp_f(self, lo: float, hi: float) -> None:
-        """Emit CLAMP_F with lo/hi bounds (extended encoding)."""
-        # Standard: operand2 = float_as_uint32 (single bound)
-        # Extended: operand2 = (hi_u16 << 16) | lo_u16
-        lo_i16 = max(-32768, min(32767, int(lo * 100)))  # Scale to 0.01 precision
-        hi_i16 = max(-32768, min(32767, int(hi * 100)))
-        operand2 = ((hi_i16 & 0xFFFF) << 16) | (lo_i16 & 0xFFFF)
+        """Emit CLAMP_F with lo/hi bounds as IEEE float16 in operand2.
+
+        Matches the C firmware's CLAMP_F decoder which uses f16_to_f32_bits():
+          lower 16 bits of operand2 = lo as float16 bit pattern
+          upper 16 bits of operand2 = hi as float16 bit pattern
+        """
+        lo16 = f32_to_f16_bits(lo) & 0xFFFF
+        hi16 = f32_to_f16_bits(hi) & 0xFFFF
+        operand2 = (hi16 << 16) | lo16
         self.emit_raw(0x10, FLAGS_EXTENDED_CLAMP, 0, operand2)
 
     def emit_eq_f(self) -> None:
@@ -192,17 +258,33 @@ class BytecodeEmitter:
         """Emit READ_TIMER_MS instruction."""
         self.emit_raw(0x1C, 0x00, 0, 0)
 
-    def emit_jump(self, target: int) -> None:
-        """Emit JUMP instruction."""
-        self.emit_raw(0x1D, 0x00, target & 0xFFFF, 0)
+    def emit_jump(self, target: int, is_call: bool = False) -> None:
+        """Emit JUMP instruction.
+
+        Target is stored in operand2 (uint32, bytes 4-7) to match the C VM's
+        vm_execute_instruction() which reads: vm->pc = operand2.
+        For RET, operand2 is set to 0xFFFFFFFF and IS_CALL flag is cleared.
+        """
+        flags = FLAGS_IS_CALL if is_call else 0
+        self.emit_raw(0x1D, flags, 0, target & 0xFFFFFFFF)
+
+    def emit_ret(self) -> None:
+        """Emit RET instruction (JUMP with operand2=0xFFFFFFFF)."""
+        self.emit_raw(0x1D, 0x00, 0, 0xFFFFFFFF)
 
     def emit_jump_if_false(self, target: int) -> None:
-        """Emit JUMP_IF_FALSE instruction."""
-        self.emit_raw(0x1E, 0x00, target & 0xFFFF, 0)
+        """Emit JUMP_IF_FALSE instruction.
+
+        Target is stored in operand2 (uint32) to match the C VM.
+        """
+        self.emit_raw(0x1E, 0x00, 0, target & 0xFFFFFFFF)
 
     def emit_jump_if_true(self, target: int) -> None:
-        """Emit JUMP_IF_TRUE instruction."""
-        self.emit_raw(0x1F, 0x00, target & 0xFFFF, 0)
+        """Emit JUMP_IF_TRUE instruction.
+
+        Target is stored in operand2 (uint32) to match the C VM.
+        """
+        self.emit_raw(0x1F, 0x00, 0, target & 0xFFFFFFFF)
 
     def emit_halt(self) -> None:
         """Emit HALT (NOP + SYSCALL + syscall_id=1)."""
