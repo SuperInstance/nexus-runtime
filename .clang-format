@@ -1,0 +1,15 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: ForIndentation
+BreakBeforeBraces: Linux
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: WithoutElse
+ColumnLimit: 100
+PointerAlignment: Right
+SortIncludes: CaseInsensitive
+IncludeBlocks: Preserve
+SpaceBeforeParens: ControlStatements
+AlignConsecutiveMacros: true
+AlignTrailingComments: true

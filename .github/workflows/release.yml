@@ -1,0 +1,45 @@
+name: NEXUS Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-release:
+    name: "Build Release Artifacts"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y gcc cmake make
+
+      - name: Build firmware tests
+        run: |
+          cd tests/firmware
+          mkdir -p build && cd build
+          cmake .. -DCMAKE_SOURCE_DIR=${{ github.workspace }}
+          make -j$(nproc)
+
+      - name: Run tests
+        run: |
+          cd tests/firmware/build
+          ./test_firmware
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Python tests
+        run: |
+          cd jetson
+          pip install -r requirements.txt
+          cd ${{ github.workspace }}
+          python -m pytest tests/jetson/ -v
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
