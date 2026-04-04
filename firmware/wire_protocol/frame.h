@@ -23,6 +23,8 @@ extern "C" {
 #define FRAME_MAX_COBS      1051
 #define FRAME_MAX_WIRE      1053
 #define FRAME_HEADER_SIZE   10
+#define FRAME_CRC_SIZE      2
+#define FRAME_MAX_PAYLOAD   1024
 
 #define FRAME_ERR_NONE              0
 #define FRAME_ERR_TOO_LARGE         0x5001
@@ -64,6 +66,21 @@ uint32_t frame_receiver_feed(frame_receiver_t *rx, uint8_t byte);
  * @return Pointer to decoded frame data, or NULL if no frame ready.
  */
 const uint8_t *frame_receiver_get_data(const frame_receiver_t *rx, uint16_t *out_len);
+
+/**
+ * @brief Build a wire frame from header + payload.
+ *
+ * Wire format: [0x00] [COBS(header + payload + CRC)] [0x00]
+ *
+ * @param header Pointer to 10-byte message header.
+ * @param payload Pointer to payload data.
+ * @param payload_len Length of payload.
+ * @param out Output buffer (must be >= FRAME_MAX_WIRE bytes).
+ * @param out_max Maximum output buffer size.
+ * @return Total wire frame length, or 0 on error.
+ */
+size_t frame_tx_build(const uint8_t *header, const uint8_t *payload,
+                      uint16_t payload_len, uint8_t *out, size_t out_max);
 
 #ifdef __cplusplus
 }

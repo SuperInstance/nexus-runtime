@@ -14,7 +14,8 @@ def cobs_encode(data: bytes) -> bytes:
         data: Input bytes (may contain zeros).
 
     Returns:
-        COBS-encoded bytes (no zeros except trailing delimiter).
+        COBS-encoded bytes (no zeros except potential trailing delimiter).
+        Returns b"\\x01" for empty input.
     """
     if not data:
         return b"\x01"
@@ -53,6 +54,7 @@ def cobs_decode(data: bytes) -> bytes:
 
     Returns:
         Decoded original bytes.
+        Returns b"" for empty input.
     """
     if not data:
         return b""
