@@ -1,17 +1,14 @@
 /**
  * @file test_main.c
  * @brief NEXUS firmware test runner - Unity framework.
+ *
+ * Runs: COBS, CRC-16, Frame, and HAL integration tests.
+ * VM opcode tests are in test_vm_opcodes.c with their own main().
  */
 
 #include "unity.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-/* VM opcode tests */
-extern void test_vm_opcodes_nop(void);
-extern void test_vm_load_bytecode(void);
-extern void test_vm_validate_valid(void);
-extern void test_vm_validate_invalid_size(void);
 
 /* Wire protocol tests - COBS */
 extern void test_cobs_roundtrip_with_zeros(void);
@@ -49,21 +46,36 @@ extern void test_frame_multiple_sequence(void);
 extern void test_frame_tx_build_valid(void);
 extern void test_frame_tx_build_with_payload(void);
 
+/* HAL integration tests */
+extern void test_hal_test_01_vm_reads_sensor(void);
+extern void test_hal_test_02_vm_writes_actuator(void);
+extern void test_hal_test_03_rate_limiting(void);
+extern void test_hal_test_04_estop_forces_safe(void);
+extern void test_hal_test_05_nan_guard(void);
+extern void test_hal_test_06_safety_state_transitions(void);
+extern void test_hal_test_07_watchdog_timeout(void);
+extern void test_hal_test_08_overcurrent(void);
+extern void test_hal_test_09_clamp_write_integration(void);
+extern void test_hal_test_10_actuators_independent(void);
+extern void test_hal_test_init_defaults(void);
+extern void test_hal_test_configure_sensor(void);
+extern void test_hal_test_read_sensor_invalid(void);
+extern void test_hal_test_infinity_guard(void);
+extern void test_hal_test_clamp_actuator(void);
+extern void test_hal_test_watchdog_via_hal(void);
+extern void test_hal_test_safety_state_name(void);
+extern void test_hal_test_safety_sm_basic(void);
+extern void test_hal_test_heartbeat_monitor(void);
+extern void test_hal_test_rate_negative_direction(void);
+
 void setUp(void) { }
 void tearDown(void) { }
 
 int main(void) {
     printf("=== NEXUS Firmware Tests ===\n\n");
 
-    /* VM opcode tests */
-    printf("--- VM Opcode Tests ---\n");
-    RUN_TEST(vm_opcodes_nop);
-    RUN_TEST(vm_load_bytecode);
-    RUN_TEST(vm_validate_valid);
-    RUN_TEST(vm_validate_invalid_size);
-
     /* COBS tests */
-    printf("\n--- COBS Encode/Decode Tests ---\n");
+    printf("--- COBS Encode/Decode Tests ---\n");
     RUN_TEST(cobs_roundtrip_with_zeros);
     RUN_TEST(cobs_all_zeros);
     RUN_TEST(cobs_all_0xff);
@@ -100,6 +112,29 @@ int main(void) {
     RUN_TEST(frame_multiple_sequence);
     RUN_TEST(frame_tx_build_valid);
     RUN_TEST(frame_tx_build_with_payload);
+
+    /* HAL integration tests */
+    printf("\n--- HAL Integration Tests ---\n");
+    RUN_TEST(hal_test_init_defaults);
+    RUN_TEST(hal_test_configure_sensor);
+    RUN_TEST(hal_test_read_sensor_invalid);
+    RUN_TEST(hal_test_01_vm_reads_sensor);
+    RUN_TEST(hal_test_02_vm_writes_actuator);
+    RUN_TEST(hal_test_03_rate_limiting);
+    RUN_TEST(hal_test_04_estop_forces_safe);
+    RUN_TEST(hal_test_05_nan_guard);
+    RUN_TEST(hal_test_infinity_guard);
+    RUN_TEST(hal_test_clamp_actuator);
+    RUN_TEST(hal_test_rate_negative_direction);
+    RUN_TEST(hal_test_06_safety_state_transitions);
+    RUN_TEST(hal_test_safety_state_name);
+    RUN_TEST(hal_test_safety_sm_basic);
+    RUN_TEST(hal_test_07_watchdog_timeout);
+    RUN_TEST(hal_test_watchdog_via_hal);
+    RUN_TEST(hal_test_heartbeat_monitor);
+    RUN_TEST(hal_test_08_overcurrent);
+    RUN_TEST(hal_test_09_clamp_write_integration);
+    RUN_TEST(hal_test_10_actuators_independent);
 
     printf("\n=== All tests complete ===\n");
     return 0;

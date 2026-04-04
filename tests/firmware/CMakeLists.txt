@@ -24,6 +24,7 @@ add_executable(test_firmware
     test_cobs.c
     test_crc16.c
     test_frame.c
+    test_hal_integration.c
     # Include source files under test
     ${CMAKE_SOURCE_DIR}/firmware/wire_protocol/cobs.c
     ${CMAKE_SOURCE_DIR}/firmware/wire_protocol/crc16.c
@@ -32,7 +33,13 @@ add_executable(test_firmware
     ${CMAKE_SOURCE_DIR}/firmware/nexus_vm/vm_core.c
     ${CMAKE_SOURCE_DIR}/firmware/nexus_vm/vm_opcodes.c
     ${CMAKE_SOURCE_DIR}/firmware/nexus_vm/vm_validate.c
+    ${CMAKE_SOURCE_DIR}/firmware/safety/safety_sm.c
+    ${CMAKE_SOURCE_DIR}/firmware/safety/watchdog.c
+    ${CMAKE_SOURCE_DIR}/firmware/safety/heartbeat.c
+    ${CMAKE_SOURCE_DIR}/firmware/drivers/hal.c
 )
+
+target_link_libraries(test_firmware m)
 
 enable_testing()
 add_test(NAME firmware_tests COMMAND test_firmware)

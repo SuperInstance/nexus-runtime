@@ -1,9 +1,9 @@
 /**
  * @file heartbeat.h
- * @brief NEXUS Safety System - Heartbeat monitor.
+ * @brief NEXUS Safety System — Heartbeat monitor.
  *
- * Monitors heartbeat from Jetson (100ms interval expected).
- * 3 misses -> DEGRADED, 10 misses -> SAFE_STATE.
+ * Monitors heartbeat from Jetson (configurable interval).
+ * Tracks miss count and provides status (OK, DEGRADED, SAFE, OFFLINE).
  */
 
 #ifndef NEXUS_HEARTBEAT_H
@@ -16,37 +16,43 @@
 extern "C" {
 #endif
 
-#define HB_MISS_THRESHOLD_DEGRADED  3
-#define HB_MISS_THRESHOLD_SAFE      10
-#define HB_EXPECTED_INTERVAL_MS     100
+typedef enum {
+    HB_OK,
+    HB_DEGRADED,
+    HB_SAFE,
+    HB_OFFLINE,
+} heartbeat_status_t;
 
 typedef struct {
-    uint32_t last_rx_ms;
-    uint32_t missed_count;
-    uint32_t total_rx;
-    bool active;
+    uint32_t last_heartbeat_ms;
+    uint32_t expected_interval_ms;    /* 1000ms from node, 5000ms from Jetson */
+    uint32_t degrade_threshold_ms;    /* 5000ms */
+    uint32_t safe_threshold_ms;       /* 10000ms */
+    uint32_t miss_count;
+    uint32_t total_misses;
+    bool online;
 } heartbeat_monitor_t;
 
 /**
- * @brief Initialize heartbeat monitor.
- * @param hb Pointer to heartbeat monitor.
+ * @brief Initialize heartbeat monitor with configurable interval.
  */
-void heartbeat_init(heartbeat_monitor_t *hb);
+void heartbeat_init(heartbeat_monitor_t *hb, uint32_t expected_interval_ms);
 
 /**
  * @brief Record a heartbeat received.
- * @param hb Pointer to heartbeat monitor.
- * @param now_ms Current time in milliseconds.
  */
-void heartbeat_record(heartbeat_monitor_t *hb, uint32_t now_ms);
+void heartbeat_record(heartbeat_monitor_t *hb, uint32_t tick_ms);
 
 /**
- * @brief Check heartbeat status (call periodically).
- * @param hb Pointer to heartbeat monitor.
- * @param now_ms Current time in milliseconds.
- * @return Number of missed heartbeats since last received.
+ * @brief Check heartbeat status based on elapsed time.
+ * @return Current heartbeat status.
  */
-uint32_t heartbeat_check(heartbeat_monitor_t *hb, uint32_t now_ms);
+heartbeat_status_t heartbeat_check(heartbeat_monitor_t *hb, uint32_t tick_ms);
+
+/**
+ * @brief Get current miss count.
+ */
+uint32_t heartbeat_get_miss_count(heartbeat_monitor_t *hb);
 
 #ifdef __cplusplus
 }

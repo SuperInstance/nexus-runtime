@@ -1,9 +1,9 @@
 /**
  * @file watchdog.h
- * @brief NEXUS Safety System - Hardware/software watchdog.
+ * @brief NEXUS Safety System — Hardware watchdog timer.
  *
- * HW watchdog: MAX6818, alternating 0x55/0xAA pattern, 1.0s timeout.
- * SW watchdog: FreeRTOS task monitoring, 1.0s timeout per task.
+ * HW watchdog: MAX6818-style, alternating 0x55/0xAA kick pattern,
+ * 1000ms timeout. 200ms recommended kick interval.
  */
 
 #ifndef NEXUS_WATCHDOG_H
@@ -16,41 +16,36 @@
 extern "C" {
 #endif
 
-#define WDT_MAX_MONITORED_TASKS 8
-
 typedef struct {
-    uint32_t last_checkin[WDT_MAX_MONITORED_TASKS];
-    uint32_t timeout_ms;
-    bool initialized;
-} watchdog_state_t;
+    uint8_t kick_pattern;       /* Alternating 0x55/0xAA */
+    uint32_t last_kick_ms;
+    uint32_t timeout_ms;        /* 1000ms hardware timeout */
+    uint32_t kick_interval_ms;  /* 200ms kick interval */
+    bool enabled;
+    bool triggered;
+    uint32_t trigger_count;
+} watchdog_t;
 
 /**
- * @brief Initialize the watchdog system.
- * @param wdt Pointer to watchdog state.
+ * @brief Initialize watchdog with defaults (1000ms timeout, 200ms interval).
  */
-void watchdog_init(watchdog_state_t *wdt);
+void watchdog_init(watchdog_t *wdt);
 
 /**
- * @brief Feed the hardware watchdog (0x55/0xAA pattern).
+ * @brief Kick the watchdog with alternating 0x55/0xAA pattern.
  */
-void watchdog_feed_hw(void);
+void watchdog_kick(watchdog_t *wdt, uint32_t tick_ms);
 
 /**
- * @brief Register a task for software watchdog monitoring.
- * @param wdt Pointer to watchdog state.
- * @param task_index Task index (0 to WDT_MAX_MONITORED_TASKS-1).
- * @param timeout_ms Timeout in milliseconds.
- * @return true if registered, false on error.
+ * @brief Check if watchdog has expired.
+ * @return true if watchdog has timed out since last kick.
  */
-bool watchdog_register_task(watchdog_state_t *wdt, uint8_t task_index, uint32_t timeout_ms);
+bool watchdog_check(watchdog_t *wdt, uint32_t tick_ms);
 
 /**
- * @brief Task check-in (call periodically from monitored task).
- * @param wdt Pointer to watchdog state.
- * @param task_index Task index.
- * @param now_ms Current time in milliseconds.
+ * @brief Disable watchdog (TESTING ONLY — NEVER in production!).
  */
-void watchdog_task_checkin(watchdog_state_t *wdt, uint8_t task_index, uint32_t now_ms);
+void watchdog_disable(watchdog_t *wdt);
 
 #ifdef __cplusplus
 }
