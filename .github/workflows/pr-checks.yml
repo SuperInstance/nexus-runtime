@@ -1,0 +1,61 @@
+name: PR Checks
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pytest jsonschema
+      - run: cd jetson && python -m pytest -v --tb=short 2>&1 | tee test-results.txt
+      - run: |
+          if grep -q "FAILED" test-results.txt; then
+            echo "::error::Some tests failed"
+            exit 1
+          fi
+
+  cmake-configure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p build && cd build
+          cmake .. -DNEXUS_HOST_TEST=ON 2>&1
+
+  schema-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install jsonschema
+      - run: |
+          cd jetson
+          python -c "
+          import json, jsonschema, os
+          schema_dir = '../schemas'
+          for f in os.listdir(schema_dir):
+              if f.endswith('.json'):
+                  with open(os.path.join(schema_dir, f)) as s:
+                      schema = json.load(s)
+                  jsonschema.Draft7Validator.check_schema(schema)
+                  print(f'{f}: valid JSON Schema')
+          "
+
+  docs-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "Checking planning docs exist..."
+          for doc in HIGH_LEVEL_SCHEMA ROADMAP BUILDER_SKILL_KIT RESEARCH_FINDINGS MIGRATION_PLAN; do
+            if [ ! -f "docs/planning/${doc}.md" ]; then
+              echo "::warning::Missing ${doc}.md"
+            fi
+          done
