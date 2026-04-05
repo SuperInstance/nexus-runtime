@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "nexus://schemas/reflex_definition",
+  "title": "NEXUS Reflex Definition",
+  "description": "JSON definition of a reflex program compiled to 8-byte bytecode for the ESP32 VM. Derived from reflex_compiler/compiler.py and reflex_compiler/safety_validator.py.",
+  "definitions": {
+    "instruction": {
+      "type": "object",
+      "description": "A single VM instruction in the reflex body",
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "NOP", "PUSH_I8", "PUSH_I16", "PUSH_F32", "POP", "DUP", "SWAP", "ROT",
+            "ADD_F", "SUB_F", "MUL_F", "DIV_F", "NEG_F", "ABS_F", "MIN_F", "MAX_F",
+            "CLAMP_F",
+            "EQ_F", "LT_F", "GT_F", "LTE_F", "GTE_F",
+            "AND_B", "OR_B", "XOR_B", "NOT_B",
+            "READ_PIN", "WRITE_PIN", "READ_TIMER_MS",
+            "JUMP", "JUMP_IF_FALSE", "JUMP_IF_TRUE",
+            "DECLARE_INTENT", "ASSERT_GOAL", "VERIFY_OUTCOME", "EXPLAIN_FAILURE",
+            "SET_PRIORITY", "REQUEST_RESOURCE", "RELEASE_RESOURCE",
+            "TELL", "ASK", "DELEGATE", "REPORT_STATUS", "REQUEST_OVERRIDE",
+            "REQUIRE_CAPABILITY", "DECLARE_SENSOR_NEED", "DECLARE_ACTUATOR_USE",
+            "CHECK_AVAILABILITY", "RESERVE_RESOURCE",
+            "TRUST_CHECK", "AUTONOMY_LEVEL_ASSERT", "SAFE_BOUNDARY", "RATE_LIMIT",
+            "EMERGENCY_CLAIM", "RELEASE_CLAIM", "VERIFY_AUTHORITY"
+          ],
+          "description": "Opcode name"
+        },
+        "arg": {
+          "type": ["integer", "null"],
+          "minimum": -32768,
+          "maximum": 65535,
+          "description": "Immediate integer operand (for PUSH_I8/I16, READ_PIN, WRITE_PIN)"
+        },
+        "value": {
+          "type": ["number", "null"],
+          "description": "Float immediate value (for PUSH_F32)"
+        },
+        "flags": {
+          "type": ["string", "integer", "null"],
+          "description": "Instruction flags (e.g. '0x80' for SYSCALL)"
+        },
+        "operand1": {
+          "type": ["integer", "null"],
+          "description": "First operand (syscall ID for NOP+SYSCALL)"
+        },
+        "operand2": {
+          "type": ["integer", "null"],
+          "description": "Second operand"
+        },
+        "lo": {
+          "type": ["number", "null"],
+          "description": "CLAMP_F lower bound"
+        },
+        "hi": {
+          "type": ["number", "null"],
+          "description": "CLAMP_F upper bound"
+        },
+        "target": {
+          "type": ["string", "null"],
+          "description": "Jump target label name"
+        },
+        "label": {
+          "type": ["string", "null"],
+          "description": "Label for this instruction (jump target)"
+        }
+      },
+      "required": ["op"],
+      "additionalProperties": false
+    },
+    "pid_config": {
+      "type": "object",
+      "description": "Optional PID controller parameters for reflex",
+      "properties": {
+        "kp": {"type": "number", "description": "Proportional gain"},
+        "ki": {"type": "number", "description": "Integral gain"},
+        "kd": {"type": "number", "description": "Derivative gain"},
+        "output_min": {"type": "number", "description": "Minimum output clamp"},
+        "output_max": {"type": "number", "description": "Maximum output clamp"}
+      },
+      "required": ["kp", "ki", "kd"],
+      "additionalProperties": false
+    },
+    "trigger_condition": {
+      "type": "object",
+      "description": "Condition that triggers reflex execution",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["always", "sensor_threshold", "timer_ms", "trust_gate"],
+          "description": "Trigger type"
+        },
+        "sensor_id": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 63,
+          "description": "Sensor channel for threshold triggers"
+        },
+        "threshold": {
+          "type": ["number", "null"],
+          "description": "Threshold value for sensor_threshold triggers"
+        },
+        "comparator": {
+          "type": ["string", "null"],
+          "enum": ["gt", "lt", "gte", "lte", "eq"],
+          "description": "Comparison operator for threshold"
+        },
+        "interval_ms": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "description": "Timer interval in milliseconds"
+        },
+        "min_trust": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Minimum trust score for trust_gate triggers"
+        },
+        "min_level": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 5,
+          "description": "Minimum autonomy level for trust_gate triggers"
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Unique reflex identifier (snake_case)"
+    },
+    "intent": {
+      "type": "string",
+      "description": "Human-readable intent description"
+    },
+    "sensors": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": [],
+      "description": "List of sensor input names"
+    },
+    "actuators": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "default": [],
+      "description": "List of actuator output names"
+    },
+    "trust_min": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "default": 0.0,
+      "description": "Minimum trust required to deploy this reflex"
+    },
+    "author": {
+      "type": "string",
+      "enum": ["human", "agent"],
+      "default": "human",
+      "description": "Author of the reflex (affects trust gain rate)"
+    },
+    "pid": {
+      "$ref": "#/definitions/pid_config",
+      "description": "Optional PID configuration"
+    },
+    "trigger": {
+      "$ref": "#/definitions/trigger_condition",
+      "description": "Trigger condition for reflex execution"
+    },
+    "body": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/instruction"},
+      "minItems": 1,
+      "maxItems": 1000,
+      "description": "Reflex instruction body (1-1000 instructions)"
+    }
+  },
+  "required": ["name", "body"],
+  "additionalProperties": false
+}

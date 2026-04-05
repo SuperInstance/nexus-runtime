@@ -1,0 +1,299 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "nexus://schemas/node_role_config",
+  "title": "NEXUS Node Role Configuration",
+  "description": "Configuration for an ESP32 node's role, pins, safety, and reflex bindings. Derived from firmware/drivers/hal.h and firmware/safety/safety_sm.h.",
+  "definitions": {
+    "pin_config": {
+      "type": "object",
+      "description": "Hardware pin configuration (base type, extended by sensor/actuator configs)",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 63,
+          "description": "Pin/channel ID (0-63)"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "input",
+            "output",
+            "input_pullup",
+            "input_pulldown"
+          ],
+          "description": "GPIO mode"
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable pin label"
+        }
+      },
+      "required": [
+        "id",
+        "mode"
+      ]
+    },
+    "sensor_pin_config": {
+      "type": "object",
+      "description": "Sensor pin configuration (extends pin_config with sensor_type)",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 63,
+          "description": "Pin/channel ID (0-63)"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "input",
+            "output",
+            "input_pullup",
+            "input_pulldown"
+          ],
+          "description": "GPIO mode"
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable pin label"
+        },
+        "sensor_type": {
+          "type": "string",
+          "description": "Sensor type identifier (e.g. 'compass_heading', 'wind_speed')"
+        }
+      },
+      "required": [
+        "id",
+        "mode",
+        "sensor_type"
+      ],
+      "additionalProperties": false
+    },
+    "actuator_pin_config": {
+      "type": "object",
+      "description": "Actuator pin configuration (extends pin_config with actuator fields)",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 63,
+          "description": "Pin/channel ID (0-63)"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "input",
+            "output",
+            "input_pullup",
+            "input_pulldown"
+          ],
+          "description": "GPIO mode"
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable pin label"
+        },
+        "actuator_type": {
+          "type": "string",
+          "enum": [
+            "servo",
+            "relay",
+            "motor_pwm",
+            "solenoid",
+            "led",
+            "buzzer"
+          ],
+          "description": "Actuator hardware type"
+        },
+        "safe_value": {
+          "type": "number",
+          "default": 0.0,
+          "description": "Safe fallback value"
+        },
+        "min_value": {
+          "type": "number",
+          "description": "Minimum allowed value"
+        },
+        "max_value": {
+          "type": "number",
+          "description": "Maximum allowed value"
+        },
+        "max_rate_per_tick": {
+          "type": "number",
+          "minimum": 0.0,
+          "default": 0.0,
+          "description": "Maximum change per 1ms tick"
+        },
+        "overcurrent_limit_ma": {
+          "type": "number",
+          "minimum": 0.0,
+          "default": 0.0,
+          "description": "Overcurrent threshold in milliamps"
+        }
+      },
+      "required": [
+        "id",
+        "mode",
+        "actuator_type"
+      ],
+      "additionalProperties": false
+    },
+    "safety_config": {
+      "type": "object",
+      "description": "Safety state machine and watchdog configuration",
+      "properties": {
+        "heartbeat_degrade_threshold": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 255,
+          "default": 5,
+          "description": "Missed heartbeats before DEGRADED state"
+        },
+        "heartbeat_safe_threshold": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 255,
+          "default": 10,
+          "description": "Missed heartbeats before SAFE_STATE"
+        },
+        "watchdog_timeout_ms": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 60000,
+          "default": 3000,
+          "description": "Hardware watchdog timeout in milliseconds"
+        },
+        "estop_pin": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 63,
+          "description": "Emergency stop pin (null if unused)"
+        },
+        "overcurrent_pins": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 63
+          },
+          "default": [],
+          "description": "Pins to monitor for overcurrent"
+        }
+      },
+      "additionalProperties": false
+    },
+    "reflex_binding": {
+      "type": "object",
+      "description": "Binding of a compiled reflex to the node",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Reflex name (matches reflex_definition.name)"
+        },
+        "bytecode_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Offset in bytecode memory"
+        },
+        "auto_start": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to auto-start on boot"
+        }
+      },
+      "required": [
+        "name",
+        "bytecode_offset"
+      ],
+      "additionalProperties": false
+    },
+    "baud_config": {
+      "type": "object",
+      "description": "Serial baud rate configuration",
+      "properties": {
+        "initial_baud": {
+          "type": "integer",
+          "enum": [
+            9600,
+            19200,
+            38400,
+            57600,
+            115200,
+            230400,
+            460800,
+            921600
+          ],
+          "default": 115200,
+          "description": "Initial serial baud rate"
+        },
+        "negotiate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to negotiate baud rate"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "node_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "Unique node identifier"
+    },
+    "role": {
+      "type": "string",
+      "description": "Assigned role name"
+    },
+    "firmware_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+",
+      "description": "Firmware version (semver)"
+    },
+    "sensors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/sensor_pin_config"
+      },
+      "default": [],
+      "maxItems": 64,
+      "description": "Sensor pin configurations (max 64)"
+    },
+    "actuators": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/actuator_pin_config"
+      },
+      "default": [],
+      "maxItems": 64,
+      "description": "Actuator pin configurations (max 64)"
+    },
+    "safety": {
+      "$ref": "#/definitions/safety_config",
+      "description": "Safety system configuration"
+    },
+    "reflex_bindings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/reflex_binding"
+      },
+      "default": [],
+      "description": "Bound reflex programs"
+    },
+    "serial": {
+      "$ref": "#/definitions/baud_config",
+      "description": "Serial communication configuration"
+    }
+  },
+  "required": [
+    "node_id",
+    "role"
+  ],
+  "additionalProperties": false
+}

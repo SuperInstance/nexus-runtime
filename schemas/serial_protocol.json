@@ -1,0 +1,179 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "nexus://schemas/serial_protocol",
+  "title": "NEXUS Serial Protocol",
+  "description": "Wire protocol message format for Jetson-Node serial communication. Derived from firmware/wire_protocol/message.h and firmware/wire_protocol/frame.h.",
+  "definitions": {
+    "message_header": {
+      "type": "object",
+      "description": "10-byte message header (big-endian on wire)",
+      "properties": {
+        "msg_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255,
+          "description": "Message type byte (see message_types enum)"
+        },
+        "flags": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255,
+          "default": 0,
+          "description": "Flag bits: bit0=ack_required, bit1=is_ack, bit2=is_error, bit3=urgent, bit4=compressed, bit5=encrypted, bit6=no_timestamp"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535,
+          "description": "Sequence number (uint16)"
+        },
+        "timestamp_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295,
+          "description": "Timestamp in milliseconds (uint32)"
+        },
+        "payload_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1024,
+          "description": "Payload length in bytes (uint16, max 1024)"
+        }
+      },
+      "required": ["msg_type", "flags", "sequence", "timestamp_ms", "payload_length"],
+      "additionalProperties": false
+    },
+    "message_type_entry": {
+      "type": "object",
+      "description": "Message type registry entry",
+      "properties": {
+        "msg_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255,
+          "description": "Message type byte value"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable message type name"
+        },
+        "direction": {
+          "type": "string",
+          "enum": ["N2J", "J2N", "BOTH"],
+          "description": "Allowed communication direction"
+        },
+        "criticality": {
+          "type": "string",
+          "enum": ["telemetry", "command", "safety"],
+          "description": "Message priority class"
+        }
+      },
+      "required": ["msg_type", "name", "direction", "criticality"],
+      "additionalProperties": false
+    },
+    "frame_info": {
+      "type": "object",
+      "description": "Wire frame constants and limits",
+      "properties": {
+        "header_size": {"type": "integer", "const": 10, "description": "Message header size in bytes"},
+        "crc_size": {"type": "integer", "const": 2, "description": "CRC-16 trailer size in bytes"},
+        "max_payload": {"type": "integer", "const": 1024, "description": "Maximum payload size in bytes"},
+        "max_decoded_frame": {"type": "integer", "const": 1036, "description": "Max decoded frame: header + payload + CRC"},
+        "max_cobs_frame": {"type": "integer", "const": 1051, "description": "Max COBS-encoded frame size"},
+        "max_wire_frame": {"type": "integer", "const": 1053, "description": "Max wire frame with delimiters"},
+        "delimiter": {"type": "integer", "const": 0, "description": "Frame delimiter byte (0x00)"}
+      },
+      "additionalProperties": false
+    },
+    "wire_message": {
+      "type": "object",
+      "description": "Complete wire message with header and payload",
+      "properties": {
+        "header": {"$ref": "#/definitions/message_header", "description": "10-byte message header"},
+        "payload": {"type": "string", "description": "Base64-encoded payload data"},
+        "crc": {"type": "integer", "minimum": 0, "maximum": 65535, "description": "CRC-16 checksum of header + payload"}
+      },
+      "required": ["header", "payload", "crc"],
+      "additionalProperties": false
+    },
+    "sensor_telemetry_payload": {
+      "type": "object",
+      "description": "Payload format for MSG_SENSOR_TELEMETRY (0x06)",
+      "properties": {
+        "sensor_id": {"type": "integer", "minimum": 0, "maximum": 63},
+        "value": {"type": "number"},
+        "valid": {"type": "boolean"},
+        "timestamp_ms": {"type": "integer", "minimum": 0}
+      },
+      "required": ["sensor_id", "value", "valid", "timestamp_ms"],
+      "additionalProperties": false
+    },
+    "command_payload": {
+      "type": "object",
+      "description": "Payload format for MSG_COMMAND (0x07)",
+      "properties": {
+        "actuator_id": {"type": "integer", "minimum": 0, "maximum": 63},
+        "value": {"type": "number"},
+        "enabled": {"type": "boolean", "default": true}
+      },
+      "required": ["actuator_id", "value"],
+      "additionalProperties": false
+    },
+    "reflex_deploy_payload": {
+      "type": "object",
+      "description": "Payload format for MSG_REFLEX_DEPLOY (0x09)",
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 64},
+        "bytecode_b64": {"type": "string", "description": "Base64-encoded compiled bytecode"},
+        "trust_min": {"type": "number", "minimum": 0.0, "maximum": 1.0, "default": 0.0}
+      },
+      "required": ["name", "bytecode_b64"],
+      "additionalProperties": false
+    },
+    "safety_event_payload": {
+      "type": "object",
+      "description": "Payload format for MSG_SAFETY_EVENT (0x1C)",
+      "properties": {
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "heartbeat_miss", "heartbeat_recover", "estop_triggered",
+            "overcurrent", "watchdog_timeout", "sensor_failure",
+            "trust_violation", "resume_command", "boot_complete"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": ["NORMAL", "DEGRADED", "SAFE_STATE", "FAULT"]
+        },
+        "timestamp_ms": {"type": "integer", "minimum": 0}
+      },
+      "required": ["event_type", "state", "timestamp_ms"],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "description": "Top-level serial protocol configuration and message registry",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Protocol version"
+    },
+    "frame": {
+      "$ref": "#/definitions/frame_info",
+      "description": "Frame format constants"
+    },
+    "message_types": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/message_type_entry"},
+      "description": "Registry of all defined message types (28 total)"
+    },
+    "crc_polynomial": {
+      "type": "string",
+      "const": "CRC-16/CCITT-FALSE",
+      "description": "CRC-16 polynomial used (x^16 + x^12 + x^5 + 1, init=0xFFFF)"
+    }
+  },
+  "additionalProperties": false
+}

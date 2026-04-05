@@ -1,0 +1,287 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "nexus://schemas/autonomy_state",
+  "title": "NEXUS Autonomy State",
+  "description": "Trust scores, autonomy levels, and metrics for NEXUS subsystems. Derived from trust_engine/increments.py, trust_engine/levels.py, and trust_engine/events.py.",
+  "definitions": {
+    "trust_params": {
+      "type": "object",
+      "description": "INCREMENTS algorithm parameters (12 total)",
+      "properties": {
+        "alpha_gain": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.002,
+          "description": "Gain rate per evaluation window"
+        },
+        "alpha_loss": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.05,
+          "description": "Loss multiplier (25:1 ratio vs alpha_gain)"
+        },
+        "alpha_decay": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.0001,
+          "description": "Idle decay rate toward floor"
+        },
+        "t_floor": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.2,
+          "description": "Trust floor for penalty/decay branches"
+        },
+        "quality_cap": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10,
+          "description": "Max good events counted per window"
+        },
+        "evaluation_window_hours": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 168.0,
+          "default": 1.0,
+          "description": "Duration of each evaluation window"
+        },
+        "severity_exponent": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 5.0,
+          "default": 1.0,
+          "description": "Exponent applied to max severity in penalty"
+        },
+        "streak_bonus": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 0.01,
+          "default": 0.00005,
+          "description": "Per-clean-window bonus (caps at 24)"
+        },
+        "min_events_for_gain": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 1,
+          "description": "Minimum good events to trigger gain branch"
+        },
+        "n_penalty_slope": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 10.0,
+          "default": 0.1,
+          "description": "Linear slope for multi-bad-event amplification"
+        },
+        "reset_grace_hours": {
+          "type": "number",
+          "minimum": 0.0,
+          "default": 24.0,
+          "description": "Hours after a reset before another is allowed"
+        },
+        "promotion_cooldown_hours": {
+          "type": "number",
+          "minimum": 0.0,
+          "default": 72.0,
+          "description": "Minimum hours between autonomy promotions"
+        }
+      },
+      "required": ["alpha_gain", "alpha_loss", "alpha_decay", "t_floor"],
+      "additionalProperties": false
+    },
+    "trust_event": {
+      "type": "object",
+      "description": "A single trust-related event (one of 15 defined types)",
+      "properties": {
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "heartbeat_ok", "sensor_valid", "reflex_completed",
+            "actuator_nominal", "command_ack",
+            "heartbeat_missed", "sensor_invalid", "reflex_error",
+            "actuator_overrange", "trust_violation", "safety_trigger",
+            "communication_timeout",
+            "system_boot", "parameter_change", "calibration_complete"
+          ]
+        },
+        "quality": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.0,
+          "description": "Quality metric (for good events)"
+        },
+        "severity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.0,
+          "description": "Severity metric (for bad events)"
+        },
+        "timestamp": {
+          "type": "number",
+          "minimum": 0.0,
+          "default": 0.0,
+          "description": "Unix timestamp of event"
+        },
+        "subsystem": {
+          "type": "string",
+          "default": "navigation",
+          "description": "Subsystem that generated the event"
+        },
+        "is_bad": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this is a bad event"
+        }
+      },
+      "required": ["event_type"],
+      "additionalProperties": false
+    },
+    "subsystem_trust": {
+      "type": "object",
+      "description": "Trust state for a single subsystem",
+      "properties": {
+        "subsystem": {
+          "type": "string",
+          "enum": ["steering", "engine", "navigation", "payload", "communication"],
+          "description": "Subsystem name"
+        },
+        "trust_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.0,
+          "description": "Current trust score [0.0, 1.0]"
+        },
+        "autonomy_level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5,
+          "default": 0,
+          "description": "Current autonomy level (L0-L5)"
+        },
+        "consecutive_clean_windows": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Windows since last bad event"
+        },
+        "total_windows": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "clean_windows": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Total clean windows"
+        },
+        "total_observation_hours": {
+          "type": "number",
+          "minimum": 0.0,
+          "default": 0.0,
+          "description": "Cumulative observation time"
+        },
+        "last_promotion_time": {
+          "type": "number",
+          "default": 0.0,
+          "description": "Unix timestamp of last promotion"
+        },
+        "last_reset_time": {
+          "type": "number",
+          "default": 0.0,
+          "description": "Unix timestamp of last reset"
+        }
+      },
+      "required": ["subsystem"],
+      "additionalProperties": false
+    },
+    "autonomy_level_def": {
+      "type": "object",
+      "description": "Definition of an autonomy level (L0-L5)",
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "name": {
+          "type": "string",
+          "enum": [
+            "Disabled", "Advisory", "Supervised",
+            "Semi-Autonomous", "High Autonomy", "Full Autonomy"
+          ]
+        },
+        "trust_threshold": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Trust score required for this level (null for L0)"
+        },
+        "min_observation_hours": {
+          "type": "number",
+          "minimum": 0.0
+        },
+        "min_clean_windows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "key_criteria": {
+          "type": "string"
+        }
+      },
+      "required": ["level", "name", "trust_threshold",
+                    "min_observation_hours", "min_clean_windows", "key_criteria"],
+      "additionalProperties": false
+    },
+    "trust_update_result": {
+      "type": "object",
+      "description": "Result of a trust evaluation window",
+      "properties": {
+        "subsystem": {"type": "string"},
+        "old_score": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "new_score": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "delta": {"type": "number"},
+        "branch": {"type": "string", "enum": ["gain", "penalty", "decay"]},
+        "n_good": {"type": "integer", "minimum": 0},
+        "n_bad": {"type": "integer", "minimum": 0},
+        "max_severity": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "old_level": {"type": "integer", "minimum": 0, "maximum": 5},
+        "new_level": {"type": "integer", "minimum": 0, "maximum": 5},
+        "reason": {"type": "string"}
+      },
+      "required": ["subsystem", "old_score", "new_score", "delta", "branch"],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "params": {
+      "$ref": "#/definitions/trust_params",
+      "description": "INCREMENTS algorithm parameters"
+    },
+    "subsystems": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/subsystem_trust"},
+      "description": "Per-subsystem trust states"
+    },
+    "autonomy_levels": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/autonomy_level_def"},
+      "description": "All 6 autonomy level definitions"
+    },
+    "events": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/trust_event"},
+      "description": "List of trust events"
+    }
+  },
+  "additionalProperties": false
+}
