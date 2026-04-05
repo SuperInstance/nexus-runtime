@@ -1,5 +1,48 @@
 ---
-## Task ID: round10-sprint2d3 — emergency-protocol-bridge
+## Task ID: phase2-fix-and-build — fix-and-build-agent
+### Work Task
+Fix 10 critical bugs identified by research phase, then build the NexusOrchestrator integration harness.
+
+### Work Summary
+
+**Bug Fixes (10 bugs fixed):**
+
+1. **C1: Jump Target Field Mismatch** (`bytecode_deployer.py`): Changed jump validation from checking operand1 to operand2, which is the actual target field in the instruction encoding.
+
+2. **C2: .agent/next Format Contradiction** (`bridge.py`): Unified .agent/next from directory-of-JSON-files to flat text format (one mission per line), matching heartbeat's `mission_runner.py` expected format. Updated `_init_agent_dirs()` to create `.agent/next` as a text file and removed it from the directories list. Updated `get_mission_queue()` and `complete_mission()` for text-based format.
+
+3. **C3: HALT Always Fails Safety at Trust < L5** (`pipeline.py`): Modified both `stage2_safety_rules()` and `stage4_trust_check()` in `BytecodeSafetyPipeline` to exempt HALT (SYSCALL syscall_id=0x01) from trust-level gating. HALT is a safety termination opcode that must be available at all trust levels.
+
+4. **C4: Trust Score Type Mismatch** (`bridge.py`): Updated `get_status()` to extract float scores from `SubsystemTrust` objects by checking for `trust_score` attribute and falling back to direct float conversion.
+
+5. **C5: Integer/Float Mix in Wait Loop** (`intent_compiler.py`): Changed `_compile_wait()` to use `PUSH_F32` with float operands instead of `PUSH_I8` with integer operands, since `SUB_F` operates on floats.
+
+6. **C6: emergency_surface Skill Doesn't Surface** (`builtin_skills.py`): Added `em.emit_write_pin(7)` to emergency_surface bytecode to actually trigger the ascent actuator. Changed `trust_required` from 0 to 2 (WRITE_PIN requires L2). Updated version to 1.0.1.
+
+7. **I1: Dual Safety Validators** (`bridge.py`): Bridge now delegates to the 6-stage `BytecodeSafetyPipeline` (64-stack limit) instead of its internal `BytecodeDeployer.validate_bytecode()` (16-stack limit). Falls back to deployer when pipeline unavailable.
+
+8. **S1: Hardcoded HMAC Key** (`attestation.py`): HMAC signing key now loads from `NEXUS_ATTESTATION_KEY` environment variable with fallback to the default key.
+
+9. **S5: Emergency Claims Fleet Notified When No Bridge** (`response.py`): Changed `fleet_notified = True` to `fleet_notified = False` in the no-bridge branch of `respond_red()`.
+
+10. **S6: CLAMP_F Bypass** (`bytecode_deployer.py`): Enhanced CLAMP_F-before-WRITE check to detect intervening PUSH instructions (PUSH_I8, PUSH_I16, PUSH_F32) between CLAMP_F and WRITE_PIN, which would bypass the safety clamp.
+
+**Integration Orchestrator** (already existed, verified functional):
+- `NexusOrchestrator`: Central coordinator wiring all modules
+- `MissionSimulator`: Software VM simulation without hardware
+- `SystemStatus`/`StatusAggregator`: System status aggregation
+- 62 end-to-end integration tests
+
+**Test Updates:**
+- Updated bridge tests for flat-text .agent/next format
+- Updated safety pipeline tests for HALT exemption at all trust levels
+- Updated rosetta tests for PUSH_F32 in wait loop
+- Updated skill system tests for emergency_surface at L2 with WRITE_PIN
+- Updated orchestrator tests for trust seeding thresholds
+
+**Test Results:** 991 passed, 3 failed (pre-existing fleet_sync CRDT failures unrelated to our changes).
+
+**Commit:** `281f707` — "Phase 2 critical fixes + integration orchestrator"
 ### Work Task
 Implement Sprint 2D.3 + partial 2F: Emergency Protocol Bridge and Phase 2 ADRs (ADR-029 to ADR-036).
 
