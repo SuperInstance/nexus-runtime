@@ -116,8 +116,8 @@ def _make_write_pin(pin: int) -> bytes:
 
 
 def _make_jump(target: int) -> bytes:
-    """Build a JUMP instruction."""
-    return struct.pack("<BBHI", 0x1D, 0, target, 0)
+    """Build a JUMP instruction with target in operand2."""
+    return struct.pack("<BBHI", 0x1D, 0, 0, target)
 
 
 def _make_pop() -> bytes:
@@ -823,13 +823,15 @@ class TestNexusBridge:
             ".agent/telemetry",
             ".agent/trust",
             ".agent/safety",
-            ".agent/next",
             ".agent/done",
             ".agent/manifest",
         ]
         for d in expected_dirs:
             path = os.path.join(temp_repo_path, d)
             assert os.path.isdir(path), f"Missing directory: {d}"
+        # .agent/next is a flat TEXT file (not a directory)
+        next_file = os.path.join(temp_repo_path, ".agent", "next")
+        assert os.path.isfile(next_file), ".agent/next should be a file, not a directory"
 
     def test_deploy_bytecode_success(self, bridge):
         """Successful deployment should return valid DeployResult."""
@@ -967,41 +969,30 @@ class TestNexusBridge:
         assert "not found" in result.error.lower()
 
     def test_complete_mission(self, bridge, temp_repo_path):
-        """Completing a mission should move it from next to done."""
-        # Create a mission file in .agent/next
-        next_dir = os.path.join(temp_repo_path, ".agent", "next")
-        mission = {
-            "id": "mission-001",
-            "description": "Test mission",
-            "priority": 1,
-            "assigned_to": "test-vessel",
-        }
-        with open(os.path.join(next_dir, "mission-001.json"), "w") as f:
-            json.dump(mission, f)
+        """Completing a mission should remove it from .agent/next and log to done."""
+        # Write a mission line to .agent/next (flat text format)
+        next_file = os.path.join(temp_repo_path, ".agent", "next")
+        mission_line = "deploy_reflex:reflex=heading_hold,target=esp32,description=Test mission\n"
+        with open(next_file, "w") as f:
+            f.write(mission_line)
 
-        # Complete the mission
+        # Complete the mission by matching content
         result = bridge.complete_mission(
-            mission_id="mission-001",
+            mission_id="deploy_reflex:reflex=heading_hold",
             results={"summary": "Mission completed successfully"},
         )
         assert result.success is True
         assert result.commit_hash
-        assert result.mission_id == "mission-001"
 
-        # Verify file moved from next to done
-        next_files = os.listdir(next_dir)
-        assert not any("mission-001" in f for f in next_files)
+        # Verify mission removed from next file
+        with open(next_file) as f:
+            remaining = f.read()
+        assert "heading_hold" not in remaining
 
+        # Verify done file created
         done_dir = os.path.join(temp_repo_path, ".agent", "done")
-        done_files = [f for f in os.listdir(done_dir) if "mission-001" in f]
-        assert len(done_files) == 1
-
-        # Verify done file has completion data
-        with open(os.path.join(done_dir, done_files[0])) as f:
-            data = json.load(f)
-        assert data["status"] == "done"
-        assert "completed_at" in data
-        assert data["results"]["summary"] == "Mission completed successfully"
+        done_files = os.listdir(done_dir)
+        assert len([f for f in done_files if not f.startswith(".")]) >= 1
 
     def test_get_status(self, bridge):
         """get_status should return BridgeStatus with correct fields."""
@@ -1038,12 +1029,12 @@ class TestNexusBridge:
             "event_type": "warning", "details": "Test warning",
         })
 
-        # 5. Create and complete mission
-        next_dir = os.path.join(temp_repo_path, ".agent", "next")
-        with open(os.path.join(next_dir, "e2e-mission.json"), "w") as f:
-            json.dump({"id": "e2e-mission", "description": "E2E test"}, f)
+        # 5. Create and complete mission (flat text format)
+        next_file = os.path.join(temp_repo_path, ".agent", "next")
+        with open(next_file, "a") as f:
+            f.write("report:description=E2E test mission\n")
         mission_result = bridge.complete_mission(
-            "e2e-mission", {"summary": "E2E complete"}
+            "report:description=E2E test mission", {"summary": "E2E complete"}
         )
         assert mission_result.success
 

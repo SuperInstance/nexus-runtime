@@ -367,13 +367,17 @@ class BytecodeSafetyPipeline:
                             remediation="Raise trust level to L4 or use a non-safety pin",
                         ))
 
-        # --- Check: SYSCALL at trust < 5 ---
+        # --- Check: non-HALT SYSCALL at trust < 5 ---
+        # HALT (syscall_id=0x01) is allowed at all trust levels as a safety
+        # termination opcode. Only non-HALT syscalls require L5.
         if self.trust_level < 5:
             for i, (opcode, flags, op1, op2) in enumerate(instructions):
                 if opcode == OP_NOP and (flags & FLAGS_SYSCALL):
                     syscall_id = op2
+                    if syscall_id == SYSCALL_HALT:
+                        continue  # HALT is always allowed
                     result.passed = False
-                    name = {1: "HALT", 2: "PID_COMPUTE",
+                    name = {2: "PID_COMPUTE",
                             3: "RECORD_SNAPSHOT", 4: "EMIT_EVENT"}.get(
                         syscall_id, f"0x{syscall_id:02X}"
                     )
@@ -510,12 +514,18 @@ class BytecodeSafetyPipeline:
             is_syscall = (opcode == OP_NOP and (flags & FLAGS_SYSCALL))
             is_call = (opcode == OP_JUMP and (flags & FLAGS_IS_CALL))
 
-            # Check syscall privilege
+            # Check syscall privilege — HALT is allowed at all trust levels
             if is_syscall and self.trust_level < 5:
-                result.passed = False
                 syscall_id = op2
+                if syscall_id == SYSCALL_HALT:
+                    continue  # HALT is always allowed
+                result.passed = False
+                name = {2: "PID_COMPUTE",
+                        3: "RECORD_SNAPSHOT", 4: "EMIT_EVENT"}.get(
+                    syscall_id, f"0x{syscall_id:02X}"
+                )
                 err = (
-                    f"SYSCALL 0x{syscall_id:02X} at instruction {i} "
+                    f"SYSCALL {name} at instruction {i} "
                     f"requires L5, current trust: L{self.trust_level}"
                 )
                 result.errors.append(err)

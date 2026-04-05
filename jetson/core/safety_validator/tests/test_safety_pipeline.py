@@ -270,13 +270,23 @@ class TestStage2SafetyRules:
         assert len(pin_errors) == 0
 
     def test_syscall_low_trust(self):
-        syscall_instr = _make_instr(OP_NOP, FLAGS_SYSCALL, 0, 0x01)  # HALT
+        """Non-HALT SYSCALL at low trust should fail. HALT is allowed at all levels."""
+        # Test non-HALT syscall (PID_COMPUTE = 0x02)
+        syscall_instr = _make_instr(OP_NOP, FLAGS_SYSCALL, 0, 0x02)
         bc = _make_program([syscall_instr])
-        instrs = [(OP_NOP, FLAGS_SYSCALL, 0, 0x01)]
+        instrs = [(OP_NOP, FLAGS_SYSCALL, 0, 0x02)]
         p = BytecodeSafetyPipeline(trust_level=4)
         r = p.stage2_safety_rules(bc, instrs)
         assert not r.passed
         assert any("SYSCALL" in e or "L5" in e for e in r.errors)
+
+        # HALT (syscall 0x01) should be allowed at all trust levels
+        halt_instr = _make_instr(OP_NOP, FLAGS_SYSCALL, 0, 0x01)
+        bc_halt = _make_program([halt_instr])
+        instrs_halt = [(OP_NOP, FLAGS_SYSCALL, 0, 0x01)]
+        p_halt = BytecodeSafetyPipeline(trust_level=0)
+        r_halt = p_halt.stage2_safety_rules(bc_halt, instrs_halt)
+        assert r_halt.passed, "HALT should be allowed at trust level 0"
 
     def test_call_depth_limit(self):
         """Test that deep call nesting is caught."""
@@ -489,14 +499,23 @@ class TestStage4TrustCheck:
         assert r.passed
 
     def test_l4_blocks_syscall(self):
-        """L4 blocks SYSCALL."""
-        halt = _make_instr(OP_NOP, FLAGS_SYSCALL, 0, 0x01)
-        bc = _make_program([halt])
-        instrs = [(OP_NOP, FLAGS_SYSCALL, 0, 0x01)]
+        """L4 blocks non-HALT SYSCALL, but allows HALT."""
+        # Non-HALT syscall should fail at L4
+        non_halt = _make_instr(OP_NOP, FLAGS_SYSCALL, 0, 0x02)  # PID_COMPUTE
+        bc = _make_program([non_halt])
+        instrs = [(OP_NOP, FLAGS_SYSCALL, 0, 0x02)]
         p = BytecodeSafetyPipeline(trust_level=4)
         r = p.stage4_trust_check(bc, instrs)
         assert not r.passed
         assert any("SYSCALL" in e or "L5" in e for e in r.errors)
+
+        # HALT should be allowed at L4
+        halt = _make_instr(OP_NOP, FLAGS_SYSCALL, 0, 0x01)
+        bc_halt = _make_program([halt])
+        instrs_halt = [(OP_NOP, FLAGS_SYSCALL, 0, 0x01)]
+        p_halt = BytecodeSafetyPipeline(trust_level=4)
+        r_halt = p_halt.stage4_trust_check(bc_halt, instrs_halt)
+        assert r_halt.passed, "HALT should be allowed at trust level 4"
 
     def test_all_trust_levels_have_l0_subset(self):
         """Verify trust level matrix is monotonic (higher level has superset of opcodes)."""

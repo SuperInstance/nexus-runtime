@@ -839,7 +839,7 @@ class TestBuiltinSkills:
     def test_trust_levels_are_correct(self):
         """Verify trust levels match the specification."""
         skills = get_builtin_skills()
-        assert skills["emergency_surface"].trust_required == 0
+        assert skills["emergency_surface"].trust_required == 2  # Bug C6: now L2 (needs WRITE_PIN)
         assert skills["depth_monitoring"].trust_required == 1
         assert skills["sensor_survey"].trust_required == 1
         assert skills["surface_navigation"].trust_required == 2
@@ -863,16 +863,16 @@ class TestBuiltinSkills:
                 )
 
     def test_emergency_surface_is_readonly(self):
-        """Emergency surface (L0) should only use L0 opcodes."""
-        from core.safety_validator.rules import L0_OPCODES
+        """Emergency surface (L2) should use L2 opcodes including WRITE_PIN."""
+        from core.safety_validator.rules import L2_OPCODES
 
         skill = get_builtin_skill("emergency_surface")
         bc = skill.bytecode
         for i in range(len(bc) // 8):
             opcode = bc[i * 8]
-            assert opcode in L0_OPCODES, (
+            assert opcode in L2_OPCODES, (
                 f"emergency_surface instruction {i}: opcode 0x{opcode:02X} "
-                f"not in L0 opcodes"
+                f"not in L2 opcodes"
             )
 
     def test_surface_navigation_uses_write_pin(self):
@@ -963,8 +963,8 @@ class TestIntegration:
         marine = registry.find_by_domain("marine")
         assert len(marine) == 5
 
-        # Emergency surface should be available at L0
-        l0_skills = registry.get_compatible(trust_level=0)
+        # Emergency surface should be available at L2 (requires WRITE_PIN)
+        l0_skills = registry.get_compatible(trust_level=2)
         assert any(c.name == "emergency_surface" for c in l0_skills)
 
     def test_trust_gating_with_loader_and_registry(self, temp_cartridge_dir):

@@ -479,7 +479,7 @@ class TestIntentCompilerWait:
         ir = compiler.compile(intent)
         # Should have loop structure with labels
         opcodes = [i.opcode for i in ir]
-        assert "PUSH_I8" in opcodes
+        assert "PUSH_F32" in opcodes  # Bug C5 fix: uses PUSH_F32 for float counter
         assert "DUP" in opcodes
         assert "SUB_F" in opcodes
         assert "JUMP_IF_TRUE" in opcodes

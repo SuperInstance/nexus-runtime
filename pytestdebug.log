@@ -1,0 +1,1126 @@
+versions pytest-9.0.2, python-3.12.13.final.0
+invocation_dir=/tmp/nexus-runtime
+cwd=/tmp/nexus-runtime
+args=('tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists', '-v', '-p', 'no:cacheprovider', '-k', 'test_compiler_exists', '--debug')
+
+  pytest_cmdline_main [hook]
+      config: <_pytest.config.Config object at 0x7fa1e1950e30>
+    pytest_plugin_registered [hook]
+        plugin: <Session  exitstatus='<UNSET>' testsfailed=0 testscollected=0>
+        plugin_name: session
+        manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+    finish pytest_plugin_registered --> [] [hook]
+    pytest_configure [hook]
+        config: <_pytest.config.Config object at 0x7fa1e1950e30>
+      pytest_metadata [hook]
+          metadata: {'Python': '3.12.13', 'Platform': 'Linux-5.10.134-013.5.kangaroo.al8.x86_64-x86_64-with-glibc2.41', 'Packages': {'pytest': '9.0.2', 'pluggy': '1.6.0'}, 'Plugins': {'Faker': '40.1.2', 'metadata': '3.1.1', 'anyio': '4.12.1', 'asyncio': '1.3.0', 'ddtrace': '4.2.2', 'cov': '7.0.0', 'json-report': '1.5.0'}}
+          config: <_pytest.config.Config object at 0x7fa1e1950e30>
+      finish pytest_metadata --> [] [hook]
+    early skip of rewriting module: faulthandler [assertion]
+      pytest_plugin_registered [hook]
+          plugin: <class '_pytest.legacypath.LegacyTmpdirPlugin'>
+          plugin_name: legacypath-tmpdir
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+    early skip of rewriting module: pdb [assertion]
+    early skip of rewriting module: cmd [assertion]
+    early skip of rewriting module: code [assertion]
+    early skip of rewriting module: codeop [assertion]
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+          plugin_name: 140333257703200
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.config.Config object at 0x7fa1e1950e30>
+          plugin_name: pytestconfig
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.mark' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/mark/__init__.py'>
+          plugin_name: mark
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.main' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/main.py'>
+          plugin_name: main
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.runner' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/runner.py'>
+          plugin_name: runner
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.fixtures' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/fixtures.py'>
+          plugin_name: fixtures
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.helpconfig' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/helpconfig.py'>
+          plugin_name: helpconfig
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.python' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/python.py'>
+          plugin_name: python
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.terminal' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/terminal.py'>
+          plugin_name: terminal
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.debugging' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/debugging.py'>
+          plugin_name: debugging
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.unittest' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/unittest.py'>
+          plugin_name: unittest
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.capture' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/capture.py'>
+          plugin_name: capture
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.skipping' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/skipping.py'>
+          plugin_name: skipping
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.legacypath' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/legacypath.py'>
+          plugin_name: legacypath
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.tmpdir' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/tmpdir.py'>
+          plugin_name: tmpdir
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.monkeypatch' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/monkeypatch.py'>
+          plugin_name: monkeypatch
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.recwarn' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/recwarn.py'>
+          plugin_name: recwarn
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.pastebin' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/pastebin.py'>
+          plugin_name: pastebin
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.assertion' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/assertion/__init__.py'>
+          plugin_name: assertion
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.junitxml' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/junitxml.py'>
+          plugin_name: junitxml
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.doctest' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/doctest.py'>
+          plugin_name: doctest
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.setuponly' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/setuponly.py'>
+          plugin_name: setuponly
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.setupplan' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/setupplan.py'>
+          plugin_name: setupplan
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.unraisableexception' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/unraisableexception.py'>
+          plugin_name: unraisableexception
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.threadexception' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/threadexception.py'>
+          plugin_name: threadexception
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.warnings' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/warnings.py'>
+          plugin_name: warnings
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.logging' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/logging.py'>
+          plugin_name: logging
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.reports' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/reports.py'>
+          plugin_name: reports
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.faulthandler' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/faulthandler.py'>
+          plugin_name: faulthandler
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.subtests' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/subtests.py'>
+          plugin_name: subtests
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'faker.contrib.pytest.plugin' from '/home/z/.venv/lib/python3.12/site-packages/faker/contrib/pytest/plugin.py'>
+          plugin_name: faker
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'pytest_metadata.plugin' from '/home/z/.venv/lib/python3.12/site-packages/pytest_metadata/plugin.py'>
+          plugin_name: metadata
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'anyio.pytest_plugin' from '/home/z/.venv/lib/python3.12/site-packages/anyio/pytest_plugin.py'>
+          plugin_name: anyio
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'pytest_asyncio.plugin' from '/home/z/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py'>
+          plugin_name: asyncio
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'ddtrace.testing.internal.pytest.entry_point' from '/home/z/.venv/lib/python3.12/site-packages/ddtrace/testing/internal/pytest/entry_point.py'>
+          plugin_name: ddtrace
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'pytest_cov.plugin' from '/home/z/.venv/lib/python3.12/site-packages/pytest_cov/plugin.py'>
+          plugin_name: pytest_cov
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'pytest_jsonreport.plugin' from '/home/z/.venv/lib/python3.12/site-packages/pytest_jsonreport/plugin.py'>
+          plugin_name: pytest_jsonreport
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=10 _state='suspended' tmpfile=<_io.TextIOWrapper name="<_io.FileIO name=11 mode='rb+' closefd=True>" mode='r+' encoding='utf-8'>> err=<FDCapture 2 oldfd=12 _state='suspended' tmpfile=<_io.TextIOWrapper name="<_io.FileIO name=13 mode='rb+' closefd=True>" mode='r+' encoding='utf-8'>> in_=<FDCapture 0 oldfd=8 _state='started' tmpfile=<_io.TextIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+          plugin_name: capturemanager
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'jetson.conftest' from '/tmp/nexus-runtime/tests/jetson/conftest.py'>
+          plugin_name: /tmp/nexus-runtime/tests/jetson/conftest.py
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+          plugin_name: session
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <class '_pytest.legacypath.LegacyTmpdirPlugin'>
+          plugin_name: legacypath-tmpdir
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.terminal.TerminalReporter object at 0x7fa1e18bb8f0>
+          plugin_name: terminalreporter
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.logging.LoggingPlugin object at 0x7fa1e21775c0>
+          plugin_name: logging-plugin
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+    finish pytest_configure --> [] [hook]
+    pytest_sessionstart [hook]
+        session: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+          plugin_name: 140333257703200
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.config.Config object at 0x7fa1e1950e30>
+          plugin_name: pytestconfig
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.mark' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/mark/__init__.py'>
+          plugin_name: mark
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.main' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/main.py'>
+          plugin_name: main
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.runner' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/runner.py'>
+          plugin_name: runner
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.fixtures' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/fixtures.py'>
+          plugin_name: fixtures
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.helpconfig' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/helpconfig.py'>
+          plugin_name: helpconfig
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.python' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/python.py'>
+          plugin_name: python
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.terminal' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/terminal.py'>
+          plugin_name: terminal
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.debugging' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/debugging.py'>
+          plugin_name: debugging
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.unittest' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/unittest.py'>
+          plugin_name: unittest
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.capture' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/capture.py'>
+          plugin_name: capture
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.skipping' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/skipping.py'>
+          plugin_name: skipping
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.legacypath' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/legacypath.py'>
+          plugin_name: legacypath
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.tmpdir' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/tmpdir.py'>
+          plugin_name: tmpdir
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.monkeypatch' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/monkeypatch.py'>
+          plugin_name: monkeypatch
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.recwarn' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/recwarn.py'>
+          plugin_name: recwarn
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.pastebin' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/pastebin.py'>
+          plugin_name: pastebin
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.assertion' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/assertion/__init__.py'>
+          plugin_name: assertion
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.junitxml' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/junitxml.py'>
+          plugin_name: junitxml
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.doctest' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/doctest.py'>
+          plugin_name: doctest
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.setuponly' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/setuponly.py'>
+          plugin_name: setuponly
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.setupplan' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/setupplan.py'>
+          plugin_name: setupplan
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.unraisableexception' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/unraisableexception.py'>
+          plugin_name: unraisableexception
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.threadexception' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/threadexception.py'>
+          plugin_name: threadexception
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.warnings' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/warnings.py'>
+          plugin_name: warnings
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.logging' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/logging.py'>
+          plugin_name: logging
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.reports' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/reports.py'>
+          plugin_name: reports
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.faulthandler' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/faulthandler.py'>
+          plugin_name: faulthandler
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module '_pytest.subtests' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/subtests.py'>
+          plugin_name: subtests
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'faker.contrib.pytest.plugin' from '/home/z/.venv/lib/python3.12/site-packages/faker/contrib/pytest/plugin.py'>
+          plugin_name: faker
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'pytest_metadata.plugin' from '/home/z/.venv/lib/python3.12/site-packages/pytest_metadata/plugin.py'>
+          plugin_name: metadata
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'anyio.pytest_plugin' from '/home/z/.venv/lib/python3.12/site-packages/anyio/pytest_plugin.py'>
+          plugin_name: anyio
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'pytest_asyncio.plugin' from '/home/z/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py'>
+          plugin_name: asyncio
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'ddtrace.testing.internal.pytest.entry_point' from '/home/z/.venv/lib/python3.12/site-packages/ddtrace/testing/internal/pytest/entry_point.py'>
+          plugin_name: ddtrace
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'pytest_cov.plugin' from '/home/z/.venv/lib/python3.12/site-packages/pytest_cov/plugin.py'>
+          plugin_name: pytest_cov
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'pytest_jsonreport.plugin' from '/home/z/.venv/lib/python3.12/site-packages/pytest_jsonreport/plugin.py'>
+          plugin_name: pytest_jsonreport
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=10 _state='suspended' tmpfile=<_io.TextIOWrapper name="<_io.FileIO name=11 mode='rb+' closefd=True>" mode='r+' encoding='utf-8'>> err=<FDCapture 2 oldfd=12 _state='suspended' tmpfile=<_io.TextIOWrapper name="<_io.FileIO name=13 mode='rb+' closefd=True>" mode='r+' encoding='utf-8'>> in_=<FDCapture 0 oldfd=8 _state='started' tmpfile=<_io.TextIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+          plugin_name: capturemanager
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <module 'jetson.conftest' from '/tmp/nexus-runtime/tests/jetson/conftest.py'>
+          plugin_name: /tmp/nexus-runtime/tests/jetson/conftest.py
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+          plugin_name: session
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <class '_pytest.legacypath.LegacyTmpdirPlugin'>
+          plugin_name: legacypath-tmpdir
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.terminal.TerminalReporter object at 0x7fa1e18bb8f0>
+          plugin_name: terminalreporter
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.logging.LoggingPlugin object at 0x7fa1e21775c0>
+          plugin_name: logging-plugin
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          plugin: <_pytest.fixtures.FixtureManager object at 0x7fa1e18b84d0>
+          plugin_name: funcmanage
+          manager: <_pytest.config.PytestPluginManager object at 0x7fa1e1f9bf20>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_report_header [hook]
+          config: <_pytest.config.Config object at 0x7fa1e1950e30>
+          start_path: /tmp/nexus-runtime
+          startdir: /tmp/nexus-runtime
+      finish pytest_report_header --> [['asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function'], ['rootdir: /tmp/nexus-runtime', 'configfile: pyproject.toml', 'plugins: Faker-40.1.2, metadata-3.1.1, anyio-4.12.1, asyncio-1.3.0, ddtrace-4.2.2, cov-7.0.0, json-report-1.5.0'], "metadata: {'Python': '3.12.13', 'Platform': 'Linux-5.10.134-013.5.kangaroo.al8.x86_64-x86_64-with-glibc2.41', 'Packages': {'pytest': '9.0.2', 'pluggy': '1.6.0'}, 'Plugins': {'Faker': '40.1.2', 'metadata': '3.1.1', 'anyio': '4.12.1', 'asyncio': '1.3.0', 'ddtrace': '4.2.2', 'cov': '7.0.0', 'json-report': '1.5.0'}}", ['using: pytest-9.0.2', 'registered third-party plugins:', '  Faker-40.1.2 at /home/z/.venv/lib/python3.12/site-packages/faker/contrib/pytest/plugin.py', '  pytest-metadata-3.1.1 at /home/z/.venv/lib/python3.12/site-packages/pytest_metadata/plugin.py', '  anyio-4.12.1 at /home/z/.venv/lib/python3.12/site-packages/anyio/pytest_plugin.py', '  pytest-asyncio-1.3.0 at /home/z/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py', '  ddtrace-4.2.2 at /home/z/.venv/lib/python3.12/site-packages/ddtrace/testing/internal/pytest/entry_point.py', '  pytest-cov-7.0.0 at /home/z/.venv/lib/python3.12/site-packages/pytest_cov/plugin.py', '  pytest-json-report-1.5.0 at /home/z/.venv/lib/python3.12/site-packages/pytest_jsonreport/plugin.py']] [hook]
+    finish pytest_sessionstart --> [] [hook]
+    pytest_collection [hook]
+        session: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+    perform_collect <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0> ['tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists'] [collection]
+        pytest_collectstart [hook]
+            collector: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+        finish pytest_collectstart --> [] [hook]
+        pytest_make_collect_report [hook]
+            collector: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+        processing argument CollectionArgument(path=PosixPath('/tmp/nexus-runtime/tests/jetson/test_compiler.py'), parts=['TestReflexCompiler', 'test_compiler_exists'], parametrization=None, module_name=None, original_index=0) [collection]
+            pytest_collect_directory [hook]
+                path: /tmp/nexus-runtime
+                parent: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+            finish pytest_collect_directory --> <Dir nexus-runtime> [hook]
+            pytest_collectstart [hook]
+                collector: <Dir nexus-runtime>
+            finish pytest_collectstart --> [] [hook]
+            pytest_make_collect_report [hook]
+                collector: <Dir nexus-runtime>
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/.clang-format
+                  path: /tmp/nexus-runtime/.clang-format
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Dir nexus-runtime>
+                  file_path: /tmp/nexus-runtime/.clang-format
+                  path: /tmp/nexus-runtime/.clang-format
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/.git
+                  path: /tmp/nexus-runtime/.git
+              finish pytest_ignore_collect --> True [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/.github
+                  path: /tmp/nexus-runtime/.github
+              finish pytest_ignore_collect --> True [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/.gitignore
+                  path: /tmp/nexus-runtime/.gitignore
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Dir nexus-runtime>
+                  file_path: /tmp/nexus-runtime/.gitignore
+                  path: /tmp/nexus-runtime/.gitignore
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/.pytest_cache
+                  path: /tmp/nexus-runtime/.pytest_cache
+              finish pytest_ignore_collect --> True [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/CMakeLists.txt
+                  path: /tmp/nexus-runtime/CMakeLists.txt
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Dir nexus-runtime>
+                  file_path: /tmp/nexus-runtime/CMakeLists.txt
+                  path: /tmp/nexus-runtime/CMakeLists.txt
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/LICENSE
+                  path: /tmp/nexus-runtime/LICENSE
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Dir nexus-runtime>
+                  file_path: /tmp/nexus-runtime/LICENSE
+                  path: /tmp/nexus-runtime/LICENSE
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/README.md
+                  path: /tmp/nexus-runtime/README.md
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Dir nexus-runtime>
+                  file_path: /tmp/nexus-runtime/README.md
+                  path: /tmp/nexus-runtime/README.md
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/build
+                  path: /tmp/nexus-runtime/build
+              finish pytest_ignore_collect --> True [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/docs
+                  path: /tmp/nexus-runtime/docs
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/docs
+                  parent: <Dir nexus-runtime>
+              finish pytest_collect_directory --> <Dir docs> [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/firmware
+                  path: /tmp/nexus-runtime/firmware
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/firmware
+                  parent: <Dir nexus-runtime>
+              finish pytest_collect_directory --> <Dir firmware> [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/jetson
+                  path: /tmp/nexus-runtime/jetson
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/jetson
+                  parent: <Dir nexus-runtime>
+              finish pytest_collect_directory --> <Dir jetson> [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/pyproject.toml
+                  path: /tmp/nexus-runtime/pyproject.toml
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Dir nexus-runtime>
+                  file_path: /tmp/nexus-runtime/pyproject.toml
+                  path: /tmp/nexus-runtime/pyproject.toml
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/pytestdebug.log
+                  path: /tmp/nexus-runtime/pytestdebug.log
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Dir nexus-runtime>
+                  file_path: /tmp/nexus-runtime/pytestdebug.log
+                  path: /tmp/nexus-runtime/pytestdebug.log
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/schemas
+                  path: /tmp/nexus-runtime/schemas
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/schemas
+                  parent: <Dir nexus-runtime>
+              finish pytest_collect_directory --> <Dir schemas> [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/sdkconfig.defaults
+                  path: /tmp/nexus-runtime/sdkconfig.defaults
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Dir nexus-runtime>
+                  file_path: /tmp/nexus-runtime/sdkconfig.defaults
+                  path: /tmp/nexus-runtime/sdkconfig.defaults
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/shared
+                  path: /tmp/nexus-runtime/shared
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/shared
+                  parent: <Dir nexus-runtime>
+              finish pytest_collect_directory --> <Dir shared> [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/tests
+                  parent: <Dir nexus-runtime>
+              finish pytest_collect_directory --> <Dir tests> [hook]
+            finish pytest_make_collect_report --> <CollectReport '.' lenresult=6 outcome='passed'> [hook]
+            pytest_collectstart [hook]
+                collector: <Dir tests>
+            finish pytest_collectstart --> [] [hook]
+            pytest_make_collect_report [hook]
+                collector: <Dir tests>
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/tests/firmware
+                  path: /tmp/nexus-runtime/tests/firmware
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/tests/firmware
+                  parent: <Dir tests>
+              finish pytest_collect_directory --> <Dir firmware> [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/tests/hil
+                  path: /tmp/nexus-runtime/tests/hil
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/tests/hil
+                  parent: <Dir tests>
+              finish pytest_collect_directory --> <Dir hil> [hook]
+              pytest_collect_directory [hook]
+                  path: /tmp/nexus-runtime/tests/jetson
+                  parent: <Dir tests>
+              finish pytest_collect_directory --> <Package jetson> [hook]
+            finish pytest_make_collect_report --> <CollectReport 'tests' lenresult=3 outcome='passed'> [hook]
+            pytest_collectstart [hook]
+                collector: <Package jetson>
+            finish pytest_collectstart --> [] [hook]
+            pytest_make_collect_report [hook]
+                collector: <Package jetson>
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/tests/jetson/__init__.py
+                  path: /tmp/nexus-runtime/tests/jetson/__init__.py
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Package jetson>
+                  file_path: /tmp/nexus-runtime/tests/jetson/__init__.py
+                  path: /tmp/nexus-runtime/tests/jetson/__init__.py
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/tests/jetson/conftest.py
+                  path: /tmp/nexus-runtime/tests/jetson/conftest.py
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Package jetson>
+                  file_path: /tmp/nexus-runtime/tests/jetson/conftest.py
+                  path: /tmp/nexus-runtime/tests/jetson/conftest.py
+              finish pytest_collect_file --> [] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/tests/jetson/test_aab_codec.py
+                  path: /tmp/nexus-runtime/tests/jetson/test_aab_codec.py
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Package jetson>
+                  file_path: /tmp/nexus-runtime/tests/jetson/test_aab_codec.py
+                  path: /tmp/nexus-runtime/tests/jetson/test_aab_codec.py
+                pytest_pycollect_makemodule [hook]
+                    parent: <Package jetson>
+                    module_path: /tmp/nexus-runtime/tests/jetson/test_aab_codec.py
+                    path: /tmp/nexus-runtime/tests/jetson/test_aab_codec.py
+                finish pytest_pycollect_makemodule --> <Module test_aab_codec.py> [hook]
+              finish pytest_collect_file --> [<Module test_aab_codec.py>] [hook]
+              pytest_collect_file [hook]
+                  parent: <Package jetson>
+                  file_path: /tmp/nexus-runtime/tests/jetson/test_compiler.py
+                  path: /tmp/nexus-runtime/tests/jetson/test_compiler.py
+                pytest_pycollect_makemodule [hook]
+                    parent: <Package jetson>
+                    module_path: /tmp/nexus-runtime/tests/jetson/test_compiler.py
+                    path: /tmp/nexus-runtime/tests/jetson/test_compiler.py
+                finish pytest_pycollect_makemodule --> <Module test_compiler.py> [hook]
+              finish pytest_collect_file --> [<Module test_compiler.py>] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/tests/jetson/test_trust_engine.py
+                  path: /tmp/nexus-runtime/tests/jetson/test_trust_engine.py
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Package jetson>
+                  file_path: /tmp/nexus-runtime/tests/jetson/test_trust_engine.py
+                  path: /tmp/nexus-runtime/tests/jetson/test_trust_engine.py
+                pytest_pycollect_makemodule [hook]
+                    parent: <Package jetson>
+                    module_path: /tmp/nexus-runtime/tests/jetson/test_trust_engine.py
+                    path: /tmp/nexus-runtime/tests/jetson/test_trust_engine.py
+                finish pytest_pycollect_makemodule --> <Module test_trust_engine.py> [hook]
+              finish pytest_collect_file --> [<Module test_trust_engine.py>] [hook]
+              pytest_ignore_collect [hook]
+                  config: <_pytest.config.Config object at 0x7fa1e1950e30>
+                  collection_path: /tmp/nexus-runtime/tests/jetson/test_wire_roundtrip.py
+                  path: /tmp/nexus-runtime/tests/jetson/test_wire_roundtrip.py
+              finish pytest_ignore_collect --> None [hook]
+              pytest_collect_file [hook]
+                  parent: <Package jetson>
+                  file_path: /tmp/nexus-runtime/tests/jetson/test_wire_roundtrip.py
+                  path: /tmp/nexus-runtime/tests/jetson/test_wire_roundtrip.py
+                pytest_pycollect_makemodule [hook]
+                    parent: <Package jetson>
+                    module_path: /tmp/nexus-runtime/tests/jetson/test_wire_roundtrip.py
+                    path: /tmp/nexus-runtime/tests/jetson/test_wire_roundtrip.py
+                finish pytest_pycollect_makemodule --> <Module test_wire_roundtrip.py> [hook]
+              finish pytest_collect_file --> [<Module test_wire_roundtrip.py>] [hook]
+            finish pytest_make_collect_report --> <CollectReport 'tests/jetson' lenresult=4 outcome='passed'> [hook]
+            pytest_collectstart [hook]
+                collector: <Module test_compiler.py>
+            finish pytest_collectstart --> [] [hook]
+            pytest_make_collect_report [hook]
+                collector: <Module test_compiler.py>
+            find_module called for: jetson.test_compiler [assertion]
+            matched test file (was specified on cmdline): '/tmp/nexus-runtime/tests/jetson/test_compiler.py' [assertion]
+            rewriting PosixPath('/tmp/nexus-runtime/tests/jetson/test_compiler.py') [assertion]
+            early skip of rewriting module: reflex [assertion]
+            early skip of rewriting module: reflex.compiler [assertion]
+            early skip of rewriting module: reflex.bytecode_emitter [assertion]
+            early skip of rewriting module: reflex.safety_validator [assertion]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: @py_builtins
+                  obj: <module 'builtins' (built-in)>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: @pytest_ar
+                  obj: <module '_pytest.assertion.rewrite' from '/home/z/.venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py'>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: struct
+                  obj: <module 'struct' from '/home/z/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/struct.py'>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: pytest
+                  obj: <module 'pytest' from '/home/z/.venv/lib/python3.12/site-packages/pytest/__init__.py'>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: ReflexCompiler
+                  obj: <class 'reflex.compiler.ReflexCompiler'>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: BytecodeEmitter
+                  obj: <class 'reflex.bytecode_emitter.BytecodeEmitter'>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: INSTR_SIZE
+                  obj: 8
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: FLAGS_SYSCALL
+                  obj: 128
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: float_to_u32
+                  obj: <function float_to_u32 at 0x7fa1df399440>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: pack_instruction
+                  obj: <function pack_instruction at 0x7fa1df399120>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: unpack_instruction
+                  obj: <function unpack_instruction at 0x7fa1df3991c0>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: SafetyValidator
+                  obj: <class 'reflex.safety_validator.SafetyValidator'>
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: HEADING_HOLD_REFLEX
+                  obj: {'name': 'heading_hold', 'intent': 'Maintain heading 270 degrees', 'sensors': ['compass_heading', 'wind_speed'], 'actuators': ['rudder_angle'], 'trust_min': 0.5, 'author': 'human', 'body': [{'op': 'READ_PIN', 'arg': 0}, {'op': 'PUSH_F32', 'value': 270.0}, {'op': 'SUB_F'}, {'op': 'CLAMP_F', 'lo': -30.0, 'hi': 30.0}, {'op': 'WRITE_PIN', 'arg': 0}, {'op': 'NOP', 'flags': '0x80', 'operand1': 1}]}
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: SIMPLE_ARITHMETIC
+                  obj: {'name': 'simple_add', 'body': [{'op': 'PUSH_F32', 'value': 10.0}, {'op': 'PUSH_F32', 'value': 20.0}, {'op': 'ADD_F'}, {'op': 'PUSH_F32', 'value': 2.0}, {'op': 'DIV_F'}, {'op': 'NOP', 'flags': '0x80', 'operand1': 1}]}
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: EMPTY_BODY
+                  obj: {'name': 'empty', 'body': []}
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: NO_CLAMP_REFLEX
+                  obj: {'name': 'no_clamp', 'body': [{'op': 'READ_PIN', 'arg': 0}, {'op': 'WRITE_PIN', 'arg': 0}, {'op': 'NOP', 'flags': '0x80', 'operand1': 1}]}
+              finish pytest_pycollect_makeitem --> None [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: TestReflexCompiler
+                  obj: <class 'jetson.test_compiler.TestReflexCompiler'>
+              finish pytest_pycollect_makeitem --> [<Class TestReflexCompiler>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: TestLabelResolution
+                  obj: <class 'jetson.test_compiler.TestLabelResolution'>
+              finish pytest_pycollect_makeitem --> [<Class TestLabelResolution>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: TestClampEnforcement
+                  obj: <class 'jetson.test_compiler.TestClampEnforcement'>
+              finish pytest_pycollect_makeitem --> [<Class TestClampEnforcement>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: TestCycleBudget
+                  obj: <class 'jetson.test_compiler.TestCycleBudget'>
+              finish pytest_pycollect_makeitem --> [<Class TestCycleBudget>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: TestStackDepth
+                  obj: <class 'jetson.test_compiler.TestStackDepth'>
+              finish pytest_pycollect_makeitem --> [<Class TestStackDepth>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: TestJumpBounds
+                  obj: <class 'jetson.test_compiler.TestJumpBounds'>
+              finish pytest_pycollect_makeitem --> [<Class TestJumpBounds>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: TestBinaryOutput
+                  obj: <class 'jetson.test_compiler.TestBinaryOutput'>
+              finish pytest_pycollect_makeitem --> [<Class TestBinaryOutput>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: TestBytecodeEmitter
+                  obj: <class 'jetson.test_compiler.TestBytecodeEmitter'>
+              finish pytest_pycollect_makeitem --> [<Class TestBytecodeEmitter>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Module test_compiler.py>
+                  name: __dd_origin__
+                  obj: /tmp/nexus-runtime/tests/jetson/test_compiler.py
+              finish pytest_pycollect_makeitem --> None [hook]
+            finish pytest_make_collect_report --> <CollectReport 'tests/jetson/test_compiler.py' lenresult=8 outcome='passed'> [hook]
+            pytest_collectstart [hook]
+                collector: <Class TestReflexCompiler>
+            finish pytest_collectstart --> [] [hook]
+            pytest_make_collect_report [hook]
+                collector: <Class TestReflexCompiler>
+              pytest_pycollect_makeitem [hook]
+                  collector: <Class TestReflexCompiler>
+                  name: test_compiler_exists
+                  obj: <function TestReflexCompiler.test_compiler_exists at 0x7fa1df398d60>
+                pytest_generate_tests [hook]
+                    metafunc: <_pytest.python.Metafunc object at 0x7fa1e0ae2d80>
+                finish pytest_generate_tests --> [] [hook]
+              finish pytest_pycollect_makeitem --> [<Function test_compiler_exists>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Class TestReflexCompiler>
+                  name: test_compile_heading_hold
+                  obj: <function TestReflexCompiler.test_compile_heading_hold at 0x7fa1df39b1a0>
+                pytest_generate_tests [hook]
+                    metafunc: <_pytest.python.Metafunc object at 0x7fa1e0ae2d80>
+                finish pytest_generate_tests --> [] [hook]
+              finish pytest_pycollect_makeitem --> [<Function test_compile_heading_hold>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Class TestReflexCompiler>
+                  name: test_compile_simple_arithmetic
+                  obj: <function TestReflexCompiler.test_compile_simple_arithmetic at 0x7fa1df39b880>
+                pytest_generate_tests [hook]
+                    metafunc: <_pytest.python.Metafunc object at 0x7fa1e0ae2d80>
+                finish pytest_generate_tests --> [] [hook]
+              finish pytest_pycollect_makeitem --> [<Function test_compile_simple_arithmetic>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Class TestReflexCompiler>
+                  name: test_reject_invalid_opcode
+                  obj: <function TestReflexCompiler.test_reject_invalid_opcode at 0x7fa1df39b920>
+                pytest_generate_tests [hook]
+                    metafunc: <_pytest.python.Metafunc object at 0x7fa1e0ae2d80>
+                finish pytest_generate_tests --> [] [hook]
+              finish pytest_pycollect_makeitem --> [<Function test_reject_invalid_opcode>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Class TestReflexCompiler>
+                  name: test_reject_empty_body
+                  obj: <function TestReflexCompiler.test_reject_empty_body at 0x7fa1df39b9c0>
+                pytest_generate_tests [hook]
+                    metafunc: <_pytest.python.Metafunc object at 0x7fa1e0ae2d80>
+                finish pytest_generate_tests --> [] [hook]
+              finish pytest_pycollect_makeitem --> [<Function test_reject_empty_body>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Class TestReflexCompiler>
+                  name: test_compile_empty_dict
+                  obj: <function TestReflexCompiler.test_compile_empty_dict at 0x7fa1df39ba60>
+                pytest_generate_tests [hook]
+                    metafunc: <_pytest.python.Metafunc object at 0x7fa1e0ae2d80>
+                finish pytest_generate_tests --> [] [hook]
+              finish pytest_pycollect_makeitem --> [<Function test_compile_empty_dict>] [hook]
+              pytest_pycollect_makeitem [hook]
+                  collector: <Class TestReflexCompiler>
+                  name: test_validate_empty
+                  obj: <function TestReflexCompiler.test_validate_empty at 0x7fa1df39bb00>
+                pytest_generate_tests [hook]
+                    metafunc: <_pytest.python.Metafunc object at 0x7fa1e0ae2d80>
+                finish pytest_generate_tests --> [] [hook]
+              finish pytest_pycollect_makeitem --> [<Function test_validate_empty>] [hook]
+            finish pytest_make_collect_report --> <CollectReport 'tests/jetson/test_compiler.py::TestReflexCompiler' lenresult=7 outcome='passed'> [hook]
+        finish pytest_make_collect_report --> <CollectReport '' lenresult=1 outcome='passed'> [hook]
+        pytest_collectreport [hook]
+            report: <CollectReport '' lenresult=1 outcome='passed'>
+        finish pytest_collectreport --> [] [hook]
+    genitems <Function test_compiler_exists> [collection]
+      pytest_itemcollected [hook]
+          item: <Function test_compiler_exists>
+      finish pytest_itemcollected --> [] [hook]
+      pytest_collection_modifyitems [hook]
+          session: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+          config: <_pytest.config.Config object at 0x7fa1e1950e30>
+          items: [<Function test_compiler_exists>]
+      finish pytest_collection_modifyitems --> [] [hook]
+      pytest_collection_finish [hook]
+          session: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=0>
+        pytest_report_collectionfinish [hook]
+            config: <_pytest.config.Config object at 0x7fa1e1950e30>
+            items: [<Function test_compiler_exists>]
+            start_path: /tmp/nexus-runtime
+            startdir: /tmp/nexus-runtime
+        finish pytest_report_collectionfinish --> [] [hook]
+      finish pytest_collection_finish --> [] [hook]
+    finish pytest_collection --> None [hook]
+    pytest_runtestloop [hook]
+        session: <Session  exitstatus=<ExitCode.OK: 0> testsfailed=0 testscollected=1>
+      pytest_runtest_protocol [hook]
+          item: <Function test_compiler_exists>
+          nextitem: None
+        pytest_runtest_logstart [hook]
+            nodeid: tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists
+            location: ('tests/jetson/test_compiler.py', 63, 'TestReflexCompiler.test_compiler_exists')
+        finish pytest_runtest_logstart --> [] [hook]
+        pytest_runtest_setup [hook]
+            item: <Function test_compiler_exists>
+          pytest_fixture_setup [hook]
+              fixturedef: <FixtureDef argname='_session_faker' scope='session' baseid=''>
+              request: <SubRequest '_session_faker' for <Function test_compiler_exists>>
+          matched marked file 'faker.providers.address.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.address.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/address/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.address.en' (from 'faker') [assertion]
+          find_module called for: faker.providers.address.en [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/address/en/__init__.py') [assertion]
+          matched marked file 'faker.providers.automotive.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.automotive.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/automotive/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.bank.en_GB' (from 'faker') [assertion]
+          find_module called for: faker.providers.bank.en_GB [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/bank/en_GB/__init__.py') [assertion]
+          matched marked file 'faker.providers.barcode.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.barcode.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/barcode/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.color.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.color.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/color/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.company.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.company.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/company/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.credit_card.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.credit_card.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/credit_card/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.currency.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.currency.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/currency/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.date_time.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.date_time.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/date_time/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.geo.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.geo.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/geo/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.internet.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.internet.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/internet/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.isbn.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.isbn.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/isbn/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.job.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.job.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/job/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.misc.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.misc.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/misc/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.passport.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.passport.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/passport/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.person.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.person.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/person/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.phone_number.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.phone_number.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/phone_number/en_US/__init__.py') [assertion]
+          matched marked file 'faker.providers.ssn.en_US' (from 'faker') [assertion]
+          find_module called for: faker.providers.ssn.en_US [assertion]
+          rewriting PosixPath('/home/z/.venv/lib/python3.12/site-packages/faker/providers/ssn/en_US/__init__.py') [assertion]
+          finish pytest_fixture_setup --> <faker.proxy.Faker object at 0x7fa1e0ae2ed0> [hook]
+          pytest_fixture_setup [hook]
+              fixturedef: <FixtureDef argname='event_loop_policy' scope='session' baseid=''>
+              request: <SubRequest 'event_loop_policy' for <Function test_compiler_exists>>
+          finish pytest_fixture_setup --> <asyncio.unix_events._UnixDefaultEventLoopPolicy object at 0x7fa1e0afa990> [hook]
+          pytest_fixture_setup [hook]
+              fixturedef: <FixtureDef argname='patch_all' scope='session' baseid=''>
+              request: <SubRequest 'patch_all' for <Function test_compiler_exists>>
+          finish pytest_fixture_setup --> None [hook]
+        finish pytest_runtest_setup --> None [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function test_compiler_exists>
+            call: <CallInfo when='setup' result: None>
+        finish pytest_runtest_makereport --> <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='setup' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='setup' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='setup' outcome='passed'>
+              config: <_pytest.config.Config object at 0x7fa1e1950e30>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_call [hook]
+            item: <Function test_compiler_exists>
+          pytest_pyfunc_call [hook]
+              pyfuncitem: <Function test_compiler_exists>
+          finish pytest_pyfunc_call --> True [hook]
+        finish pytest_runtest_call --> None [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function test_compiler_exists>
+            call: <CallInfo when='call' result: None>
+        finish pytest_runtest_makereport --> <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='call' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='call' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='call' outcome='passed'>
+              config: <_pytest.config.Config object at 0x7fa1e1950e30>
+          finish pytest_report_teststatus --> ('passed', '.', 'PASSED') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_teardown [hook]
+            item: <Function test_compiler_exists>
+            nextitem: None
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef argname='patch_all' scope='session' baseid=''>
+              request: <SubRequest 'patch_all' for <Function test_compiler_exists>>
+          finish pytest_fixture_post_finalizer --> [] [hook]
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef argname='event_loop_policy' scope='session' baseid=''>
+              request: <SubRequest 'event_loop_policy' for <Function test_compiler_exists>>
+          finish pytest_fixture_post_finalizer --> [] [hook]
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef argname='_session_faker' scope='session' baseid=''>
+              request: <SubRequest '_session_faker' for <Function test_compiler_exists>>
+          finish pytest_fixture_post_finalizer --> [] [hook]
+        finish pytest_runtest_teardown --> None [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function test_compiler_exists>
+            call: <CallInfo when='teardown' result: None>
+        finish pytest_runtest_makereport --> <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='teardown' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='teardown' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists' when='teardown' outcome='passed'>
+              config: <_pytest.config.Config object at 0x7fa1e1950e30>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_logfinish [hook]
+            nodeid: tests/jetson/test_compiler.py::TestReflexCompiler::test_compiler_exists
+            location: ('tests/jetson/test_compiler.py', 63, 'TestReflexCompiler.test_compiler_exists')
+        finish pytest_runtest_logfinish --> [] [hook]
+      finish pytest_runtest_protocol --> True [hook]
+    finish pytest_runtestloop --> True [hook]
+    pytest_sessionfinish [hook]
+        session: <Session  exitstatus=0 testsfailed=0 testscollected=1>
+        exitstatus: 0
+      pytest_terminal_summary [hook]
+          terminalreporter: <_pytest.terminal.TerminalReporter object at 0x7fa1e18bb8f0>
+          exitstatus: 0
+          config: <_pytest.config.Config object at 0x7fa1e1950e30>
+      finish pytest_terminal_summary --> [] [hook]
+    finish pytest_sessionfinish --> [] [hook]
+    pytest_unconfigure [hook]
+        config: <_pytest.config.Config object at 0x7fa1e1950e30>
+    finish pytest_unconfigure --> [] [hook]

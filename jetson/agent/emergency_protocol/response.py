@@ -247,9 +247,9 @@ class EmergencyResponder:
             self._logger.warning(
                 "No bridge configured; RED response actions limited to local logging"
             )
-            # Still create the fleet alert for local logging
+            # Create the fleet alert for local logging only — fleet not actually notified
             fleet_alert = self.create_fleet_alert(incident)
-            fleet_notified = True  # At least locally logged
+            fleet_notified = False  # No bridge = no fleet notification
 
         # Step 7: Begin watchdog monitoring
         self._logger.critical("Step 7: Watchdog monitoring started")

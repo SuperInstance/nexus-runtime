@@ -220,8 +220,8 @@ class IntentCompiler:
             loop_end = self._labels.next("wait_end")
 
             ir.append(IRInstruction(
-                opcode="PUSH_I8",
-                operand1=cycles,
+                opcode="PUSH_F32",
+                operand2=float(cycles),
                 comment=f"wait {cycles} cycles: counter",
                 source_intent=intent.raw,
                 label=loop_start,
@@ -232,8 +232,8 @@ class IntentCompiler:
                 source_intent=intent.raw,
             ))
             ir.append(IRInstruction(
-                opcode="PUSH_I8",
-                operand1=1,
+                opcode="PUSH_F32",
+                operand2=1.0,
                 comment="decrement",
                 source_intent=intent.raw,
             ))
@@ -248,8 +248,8 @@ class IntentCompiler:
                 source_intent=intent.raw,
             ))
             ir.append(IRInstruction(
-                opcode="PUSH_I8",
-                operand1=0,
+                opcode="PUSH_F32",
+                operand2=0.0,
                 comment="compare with 0",
                 source_intent=intent.raw,
             ))

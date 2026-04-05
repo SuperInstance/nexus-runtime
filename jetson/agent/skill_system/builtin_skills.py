@@ -34,31 +34,33 @@ def _build_builtin_skills() -> dict[str, SkillCartridge]:
     skills: dict[str, SkillCartridge] = {}
 
     # ==================================================================
-    # 1. emergency_surface — trust L0 (read-only monitoring)
+    # 1. emergency_surface — trust L2 (requires WRITE_PIN for ascent)
     # ==================================================================
-    # Read depth, compute danger signal, clamp, read timer.
-    # Only uses L0 opcodes: READ_PIN, PUSH_F32, SUB_F, ABS_F, CLAMP_F, NOP
+    # Read depth, compute danger signal, clamp, WRITE to ascent actuator.
+    # Uses L2 opcodes: L0 + WRITE_PIN, JUMP
     #
-    # Stack trace:                    Stack depth
-    # 0: READ_PIN 10 (depth)          1
-    # 1: PUSH_F32 180.0               2
-    # 2: SUB_F                        1
-    # 3: ABS_F                        1
-    # 4: CLAMP_F 0.0 500.0            1
-    # 5: NOP                          1
+    # Stack trace:                       Stack depth
+    # 0: READ_PIN 10 (depth)             1
+    # 1: PUSH_F32 180.0                  2
+    # 2: SUB_F                           1  (depth excess over max)
+    # 3: ABS_F                           1  (always positive)
+    # 4: CLAMP_F 0.0 500.0               1  (normalize danger signal)
+    # 5: WRITE_PIN 7 (ballast actuator)  0  (trigger ascent)
+    # 6: NOP                             0  (end)
     em = BytecodeEmitter()
     em.emit_read_pin(10)      # depth sensor
     em.emit_push_f32(180.0)   # max depth trigger
-    em.emit_sub_f()           # depth - 180.0
-    em.emit_abs_f()           # |depth - 180.0|
+    em.emit_sub_f()           # depth - 180.0 (positive if too deep)
+    em.emit_abs_f()           # |depth excess|
     em.emit_clamp_f(0.0, 500.0)  # normalize danger signal
+    em.emit_write_pin(7)      # trigger ascent actuator (pin 7 = ballast)
     em.emit_nop()             # end marker
     skills["emergency_surface"] = SkillCartridge(
         name="emergency_surface",
-        version="1.0.0",
-        description="Emergency surface procedure — read depth and compute danger signal",
+        version="1.0.1",
+        description="Emergency surface procedure — read depth, compute danger, trigger ascent",
         domain="marine",
-        trust_required=0,
+        trust_required=2,
         bytecode=em.get_bytecode(),
         inputs=[
             SkillParameter(
@@ -69,9 +71,9 @@ def _build_builtin_skills() -> dict[str, SkillCartridge]:
         ],
         outputs=[
             SkillParameter(
-                name="danger_signal", type="variable",
-                range_min=0.0, range_max=500.0, unit="meters",
-                description="Normalized depth danger signal",
+                name="ascent_command", type="actuator", pin=7,
+                range_min=-100.0, range_max=100.0, unit="percent",
+                description="Ballast actuator ascent command",
             ),
         ],
         parameters={"ascent_rate": 1.0, "max_depth_trigger": 180.0},

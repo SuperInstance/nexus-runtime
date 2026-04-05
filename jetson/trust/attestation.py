@@ -11,12 +11,19 @@ import hashlib
 import hmac
 import json
 import base64
+import os
 import time
 from dataclasses import dataclass, field
 
 
 # Default signing key - in production this would come from a KMS
-_DEFAULT_SIGNING_KEY = b"nexus-trust-attestation-key-v1"
+# Load from environment variable NEXUS_ATTESTATION_KEY with fallback
+_DEFAULT_SIGNING_KEY = os.environ.get(
+    "NEXUS_ATTESTATION_KEY",
+    b"nexus-trust-attestation-key-v1",
+)
+if isinstance(_DEFAULT_SIGNING_KEY, str):
+    _DEFAULT_SIGNING_KEY = _DEFAULT_SIGNING_KEY.encode("utf-8")
 
 
 @dataclass

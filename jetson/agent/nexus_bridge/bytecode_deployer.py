@@ -215,25 +215,33 @@ class BytecodeDeployer:
 
             # Jump bounds
             if opcode in JUMP_OPCODES:
-                if op1 >= n_instr:
+                if op2 >= n_instr:
                     errors.append(
-                        f"Jump at instruction {i} targets {op1}, "
+                        f"Jump at instruction {i} targets {op2}, "
                         f"but only {n_instr} instructions exist"
                     )
 
-            # WRITE_PIN must be preceded by CLAMP_F
+            # WRITE_PIN must be preceded by CLAMP_F with no intervening PUSH
             if opcode == WRITE_PIN_OPCODE:
                 found_clamp = False
+                has_intervening_push = False
                 for j in range(i - 1, -1, -1):
                     prev_op, _, _, _ = unpack_instruction(bytecode, j * INSTR_SIZE)
                     if prev_op == WRITE_PIN_OPCODE:
                         break
+                    if prev_op in (0x01, 0x02, 0x03):  # PUSH_I8, PUSH_I16, PUSH_F32
+                        has_intervening_push = True
                     if prev_op == CLAMP_F_OPCODE:
                         found_clamp = True
                         break
                 if not found_clamp:
                     errors.append(
                         f"WRITE_PIN at instruction {i} not preceded by CLAMP_F"
+                    )
+                elif has_intervening_push:
+                    errors.append(
+                        f"WRITE_PIN at instruction {i}: PUSH instruction between "
+                        f"CLAMP_F and WRITE_PIN bypasses safety clamp"
                     )
 
             # NaN/Infinity guard for PUSH_F32

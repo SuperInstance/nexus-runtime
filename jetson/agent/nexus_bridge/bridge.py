@@ -41,6 +41,12 @@ from .trust_sync import (
 )
 from .equipment_manifest import EquipmentManifest
 
+try:
+    from core.safety_validator import BytecodeSafetyPipeline
+    _HAS_PIPELINE = True
+except ImportError:
+    _HAS_PIPELINE = False
+
 
 # ── Result types ───────────────────────────────────────────────────
 
@@ -124,6 +130,12 @@ class NexusBridge:
         self.trust = TrustSync(vessel_id=vessel_id)
         self.manifest = EquipmentManifest()
 
+        # Use 6-stage BytecodeSafetyPipeline if available (Bug I1)
+        if _HAS_PIPELINE:
+            self._safety_pipeline = BytecodeSafetyPipeline(trust_level=5)
+        else:
+            self._safety_pipeline = None
+
         # .agent directory structure
         self._init_agent_dirs()
 
@@ -135,14 +147,16 @@ class NexusBridge:
             self._repo = Repo.init(self.repo_path)
 
     def _init_agent_dirs(self) -> None:
-        """Create .agent directory structure."""
+        """Create .agent directory structure.
+
+        Note: .agent/next is a flat TEXT file (not a directory), matching
+        the heartbeat mission_runner's expected format.
+        """
         dirs = [
             ".agent/bytecode",
             ".agent/telemetry",
             ".agent/trust",
             ".agent/safety",
-            ".agent/next",
-            ".agent/done",
             ".agent/manifest",
         ]
         for d in dirs:
@@ -155,6 +169,26 @@ class NexusBridge:
             if not os.path.exists(gitkeep):
                 with open(gitkeep, "w") as f:
                     f.write("")
+
+        # .agent/done is a directory for completed mission logs
+        done_dir = os.path.join(self.repo_path, ".agent", "done")
+        os.makedirs(done_dir, exist_ok=True)
+        gitkeep = os.path.join(done_dir, ".gitkeep")
+        if not os.path.exists(gitkeep):
+            with open(gitkeep, "w") as f:
+                f.write("")
+
+        # .agent/next is a flat TEXT file (one mission per line)
+        next_file = os.path.join(self.repo_path, ".agent", "next")
+        if not os.path.exists(next_file):
+            with open(next_file, "w") as f:
+                f.write("")
+
+        # Remove .agent/next directory if it exists (legacy format)
+        next_dir = os.path.join(self.repo_path, ".agent", "next")
+        if os.path.isdir(next_dir):
+            import shutil
+            shutil.rmtree(next_dir, ignore_errors=True)
 
     @property
     def repo(self) -> Any:
@@ -174,7 +208,7 @@ class NexusBridge:
         """Deploy compiled bytecode to the vessel.
 
         Pipeline:
-          1. Validate bytecode safety
+          1. Validate bytecode safety (6-stage pipeline if available)
           2. Create git commit with bytecode + metadata
           3. (If GitHub token) Create PR for review
           4. On merge, deploy via Wire Protocol
@@ -187,23 +221,38 @@ class NexusBridge:
         Returns:
             DeployResult with commit hash, status, safety report.
         """
-        # Step 1: Validate
-        validation = self.deployer.validate_bytecode(bytecode)
-        safety_report = {
-            "is_valid": validation.passed,
-            "errors": validation.report.errors,
-            "warnings": validation.report.warnings,
-            "instruction_count": validation.report.instruction_count,
-            "max_stack_depth": validation.report.max_stack_depth,
-            "hash_sha256": validation.report.hash_sha256,
-        }
+        # Step 1: Validate — prefer 6-stage pipeline (Bug I1)
+        if self._safety_pipeline is not None:
+            report = self._safety_pipeline.validate(bytecode)
+            safety_report = {
+                "is_valid": report.overall_passed,
+                "errors": [v.description for v in report.violations if v.severity == "error"],
+                "warnings": [v.description for v in report.violations if v.severity == "warning"],
+                "instruction_count": report.instruction_count,
+                "max_stack_depth": 0,
+                "hash_sha256": report.bytecode_hash,
+            }
+            validation_passed = report.overall_passed
+            validation_instruction_count = report.instruction_count
+        else:
+            validation = self.deployer.validate_bytecode(bytecode)
+            safety_report = {
+                "is_valid": validation.passed,
+                "errors": validation.report.errors,
+                "warnings": validation.report.warnings,
+                "instruction_count": validation.report.instruction_count,
+                "max_stack_depth": validation.report.max_stack_depth,
+                "hash_sha256": validation.report.hash_sha256,
+            }
+            validation_passed = validation.passed
+            validation_instruction_count = validation.report.instruction_count
 
-        if not validation.passed:
+        if not validation_passed:
             return DeployResult(
                 success=False,
                 deployment_status="rejected",
                 safety_report=safety_report,
-                error=f"Safety validation failed: {'; '.join(validation.report.errors)}",
+                error=f"Safety validation failed: {'; '.join(safety_report['errors'])}",
             )
 
         # Step 2: Commit to git
@@ -213,9 +262,9 @@ class NexusBridge:
             "vessel_id": self.vessel_id,
             "validation": {
                 "is_valid": True,
-                "instruction_count": validation.report.instruction_count,
-                "max_stack_depth": validation.report.max_stack_depth,
-                "hash_sha256": validation.report.hash_sha256,
+                "instruction_count": validation_instruction_count,
+                "max_stack_depth": safety_report.get("max_stack_depth", 0),
+                "hash_sha256": safety_report.get("hash_sha256", ""),
             },
         }
 
@@ -397,26 +446,33 @@ class NexusBridge:
     def get_mission_queue(self) -> list[dict]:
         """Read .agent/next for pending missions from fleet.
 
+        .agent/next is a flat text file with one mission per line:
+            mission_type:param1=value1,param2=value2,...,description=...
+
         Returns:
             List of mission dicts with id, description, priority, etc.
         """
-        next_dir = os.path.join(self.repo_path, ".agent", "next")
+        next_file = os.path.join(self.repo_path, ".agent", "next")
         missions: list[dict] = []
 
-        if not os.path.isdir(next_dir):
+        if not os.path.isfile(next_file):
             return missions
 
-        for filename in sorted(os.listdir(next_dir)):
-            if filename.startswith(".") or not filename.endswith(".json"):
-                continue
-            filepath = os.path.join(next_dir, filename)
-            try:
-                with open(filepath) as f:
-                    mission = json.load(f)
-                mission["_filename"] = filename
-                missions.append(mission)
-            except (json.JSONDecodeError, OSError):
-                continue
+        try:
+            with open(next_file) as f:
+                for line_no, line in enumerate(f, 1):
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    missions.append({
+                        "_line_number": line_no,
+                        "_raw_line": line,
+                        "id": f"mission-line-{line_no}",
+                        "description": line,
+                        "source": "file",
+                    })
+        except OSError:
+            pass
 
         return missions
 
@@ -425,75 +481,88 @@ class NexusBridge:
         mission_id: str,
         results: dict,
     ) -> MissionResult:
-        """Mark mission complete, move from .agent/next to .agent/done.
+        """Mark mission complete, remove from .agent/next and log to .agent/done.
 
         Args:
-            mission_id: Mission identifier.
+            mission_id: Mission identifier (matches line content or line number).
             results: Mission results dict.
 
         Returns:
             MissionResult with commit hash.
         """
-        # Find mission in .agent/next
-        next_dir = os.path.join(self.repo_path, ".agent", "next")
+        next_file = os.path.join(self.repo_path, ".agent", "next")
         done_dir = os.path.join(self.repo_path, ".agent", "done")
         os.makedirs(done_dir, exist_ok=True)
 
-        source_file = None
-        for filename in os.listdir(next_dir):
-            if filename.startswith("."):
-                continue
-            filepath = os.path.join(next_dir, filename)
-            try:
-                with open(filepath) as f:
-                    data = json.load(f)
-                if data.get("id") == mission_id or filename.startswith(mission_id):
-                    source_file = filepath
-                    break
-            except (json.JSONDecodeError, OSError):
-                continue
+        if not os.path.isfile(next_file):
+            return MissionResult(
+                success=False,
+                mission_id=mission_id,
+                error=f"Mission {mission_id} not found: .agent/next does not exist",
+            )
 
-        if source_file is None:
+        # Read current missions
+        try:
+            with open(next_file) as f:
+                lines = f.readlines()
+        except OSError:
+            return MissionResult(
+                success=False,
+                mission_id=mission_id,
+                error=f"Mission {mission_id} not found: cannot read .agent/next",
+            )
+
+        # Find and remove the mission line
+        found_line = None
+        remaining_lines = []
+        for line in lines:
+            stripped = line.strip()
+            if found_line is None:
+                # Match by line content or by "mission-line-N" id pattern
+                if mission_id in stripped or stripped == mission_id:
+                    found_line = stripped
+                    continue
+                # Check for line-number based id: mission-line-N
+                line_idx = lines.index(line) + 1
+                if mission_id == f"mission-line-{line_idx}":
+                    found_line = stripped
+                    continue
+            remaining_lines.append(line)
+
+        if found_line is None:
             return MissionResult(
                 success=False,
                 mission_id=mission_id,
                 error=f"Mission {mission_id} not found in .agent/next",
             )
 
-        # Add completion data
-        try:
-            with open(source_file) as f:
-                mission_data = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            mission_data = {"id": mission_id}
+        # Write remaining missions back
+        with open(next_file, "w") as f:
+            for line in remaining_lines:
+                f.write(line)
 
-        mission_data["completed_at"] = datetime.now(timezone.utc).isoformat()
-        mission_data["results"] = results
-        mission_data["status"] = "done"
-
-        # Move to .agent/done
+        # Append to .agent/done
         ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%z")
-        done_filename = f"{ts}_{mission_id}.json"
-        done_filepath = os.path.join(done_dir, done_filename)
+        done_entry = f"{ts} {found_line} -> done\n"
+        done_filepath = os.path.join(done_dir, f"{ts}_{mission_id}.log")
         with open(done_filepath, "w") as f:
-            json.dump(mission_data, f, indent=2)
+            f.write(done_entry)
+            f.write(json.dumps(results, indent=2))
 
-        # Remove from .agent/next and commit
+        # Git commit
         try:
-            self.repo.index.remove([source_file], working_tree=True)
+            self.repo.index.add([next_file, done_filepath])
+            commit = self.repo.index.commit(
+                f"MISSION DONE: {mission_id} | {results.get('summary', 'completed')}"
+            )
+            commit_hash = commit.hexsha
         except Exception:
-            pass  # File may not be tracked yet
-        if os.path.exists(source_file):
-            os.remove(source_file)
-        self.repo.index.add([done_filepath])
-        commit = self.repo.index.commit(
-            f"MISSION DONE: {mission_id} | {results.get('summary', 'completed')}"
-        )
+            commit_hash = ""
 
         return MissionResult(
             success=True,
             mission_id=mission_id,
-            commit_hash=commit.hexsha,
+            commit_hash=commit_hash,
         )
 
     # ── Status ─────────────────────────────────────────────────────
@@ -507,6 +576,17 @@ class NexusBridge:
 
         missions = self.get_mission_queue()
 
+        # Extract float trust scores from SubsystemTrust objects (Bug C4)
+        raw_snapshot = self.trust.get_trust_snapshot()
+        trust_snapshot: dict[str, float] = {}
+        for name, value in raw_snapshot.items():
+            if hasattr(value, 'trust_score'):
+                trust_snapshot[name] = value.trust_score  # type: ignore[union-attr]
+            elif isinstance(value, (int, float)):
+                trust_snapshot[name] = float(value)
+            else:
+                trust_snapshot[name] = 0.0
+
         return BridgeStatus(
             vessel_id=self.vessel_id,
             connected=self._repo is not None,
@@ -514,6 +594,6 @@ class NexusBridge:
             branch=branch,
             pending_deploys=0,  # Would need PR API for accurate count
             pending_missions=len(missions),
-            trust_snapshot=self.trust.get_trust_snapshot(),
+            trust_snapshot=trust_snapshot,
             last_activity=datetime.now(timezone.utc).isoformat(),
         )
