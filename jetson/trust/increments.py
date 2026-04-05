@@ -261,7 +261,7 @@ class IncrementTrustEngine:
         )
 
     def _check_promotion(self, st: SubsystemTrust, now: float) -> int:
-        from trust_engine.levels import AUTONOMY_LEVELS
+        from trust.levels import AUTONOMY_LEVELS
         current = st.autonomy_level
         highest = current
         for lvl in range(current + 1, 6):

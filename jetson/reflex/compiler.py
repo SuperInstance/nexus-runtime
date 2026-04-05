@@ -26,14 +26,14 @@ Input format:
 
 from __future__ import annotations
 
-from reflex_compiler.bytecode_emitter import (
+from reflex.bytecode_emitter import (
     BytecodeEmitter,
     INSTR_SIZE,
     FLAGS_SYSCALL,
     float_to_u32,
     pack_instruction,
 )
-from reflex_compiler.safety_validator import SafetyValidator
+from reflex.safety_validator import SafetyValidator
 
 # Valid core opcode names
 VALID_OPCODES: set[str] = {

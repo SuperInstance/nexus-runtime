@@ -7,7 +7,7 @@ import struct
 
 import pytest
 
-from agent_runtime.aab_codec import (
+from agent.aab_codec import (
     AABInstruction,
     AABCodec,
     AAB_MAGIC,
@@ -38,7 +38,7 @@ from agent_runtime.aab_codec import (
     struct_pack_f32,
     struct_unpack_f32,
 )
-from agent_runtime.a2a_opcodes import (
+from agent.a2a_opcodes import (
     A2A_OPCODES,
     AgentContext,
     ActionResult,

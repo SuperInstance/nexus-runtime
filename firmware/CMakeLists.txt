@@ -10,7 +10,7 @@ project(nexus_firmware)
 
 # Register components - ESP-IDF will recurse into these directories
 # Main component is always required
-# nexus_vm: Bytecode VM interpreter
-# wire_protocol: COBS/CRC/frame/dispatch
-# safety: Safety state machine, watchdog, heartbeat
-# drivers: Sensor bus and actuator drivers
+# src/core/nexus_vm: Bytecode VM interpreter
+# src/core/wire_protocol: COBS/CRC/frame/dispatch
+# src/safety: Safety state machine, watchdog, heartbeat
+# src/drivers: Sensor bus and actuator drivers

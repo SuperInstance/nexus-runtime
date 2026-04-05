@@ -1,1 +1,1 @@
-"""NEXUS agent_runtime package."""
+"""NEXUS agent package."""

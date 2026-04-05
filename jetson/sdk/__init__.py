@@ -1,1 +1,1 @@
-"""NEXUS nexus_sdk package."""
+"""NEXUS sdk package."""

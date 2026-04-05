@@ -8,7 +8,7 @@ import time
 
 import pytest
 
-from trust_engine.increments import (
+from trust.increments import (
     IncrementTrustEngine,
     TrustEvent,
     TrustParams,
@@ -16,14 +16,14 @@ from trust_engine.increments import (
     SubsystemTrust,
     SUBSYSTEMS,
 )
-from trust_engine.events import (
+from trust.events import (
     EventDefinition,
     classify_event,
     get_bad_events,
     get_good_events,
     get_neutral_events,
 )
-from trust_engine.levels import (
+from trust.levels import (
     AUTONOMY_LEVELS,
     AutonomyLevel,
     can_promote,
@@ -231,7 +231,7 @@ class TestSubsystemIndependence:
 
 class TestEventClassification:
     def test_all_15_events_exist(self) -> None:
-        from trust_engine.events import EVENT_DEFINITIONS
+        from trust.events import EVENT_DEFINITIONS
         assert len(EVENT_DEFINITIONS) == 15
 
     def test_good_events(self) -> None:

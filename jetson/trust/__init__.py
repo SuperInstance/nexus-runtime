@@ -1,1 +1,1 @@
-"""NEXUS trust_engine package."""
+"""NEXUS trust package."""

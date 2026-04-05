@@ -1,1 +1,1 @@
-"""NEXUS reflex_compiler package."""
+"""NEXUS reflex package."""

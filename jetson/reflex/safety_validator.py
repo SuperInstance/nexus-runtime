@@ -13,7 +13,7 @@ from __future__ import annotations
 import math
 import struct
 
-from reflex_compiler.bytecode_emitter import (
+from reflex.bytecode_emitter import (
     INSTR_SIZE,
     unpack_instruction,
 )

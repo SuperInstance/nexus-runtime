@@ -7,8 +7,8 @@ import struct
 
 import pytest
 
-from reflex_compiler.compiler import ReflexCompiler
-from reflex_compiler.bytecode_emitter import (
+from reflex.compiler import ReflexCompiler
+from reflex.bytecode_emitter import (
     BytecodeEmitter,
     INSTR_SIZE,
     FLAGS_SYSCALL,
@@ -16,7 +16,7 @@ from reflex_compiler.bytecode_emitter import (
     pack_instruction,
     unpack_instruction,
 )
-from reflex_compiler.safety_validator import SafetyValidator
+from reflex.safety_validator import SafetyValidator
 
 
 HEADING_HOLD_REFLEX = {
