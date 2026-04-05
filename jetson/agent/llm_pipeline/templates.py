@@ -134,18 +134,16 @@ def collision_avoidance(params: TemplateParams | None = None) -> dict:
 def waypoint_follow(params: TemplateParams | None = None) -> dict:
     """Generate a waypoint following reflex program.
 
-    Checks distance to waypoint; if close enough, halts.
-    Otherwise, computes bearing error and steers toward waypoint.
-
-    This is a simplified single-pass template (not a loop, since
-    the safety pipeline detects unconditional back-edges).
+    Single-pass bearing check + correction. Reads current heading,
+    computes error from waypoint bearing, clamps and steers.
+    Designed to be called repeatedly by the control loop.
     """
     p = params or TemplateParams()
     return {
         "name": f"waypoint_follow_{int(p.wp_target_heading)}",
         "intent": f"Navigate to waypoint at heading {p.wp_target_heading}",
         "body": [
-            # Check if arrived (simplified: check x-sensor near target)
+            # Read current bearing
             {"op": "READ_PIN", "arg": p.wp_x_sensor_pin},
             {"op": "PUSH_F32", "value": p.wp_target_heading},
             {"op": "SUB_F"},
@@ -153,15 +151,18 @@ def waypoint_follow(params: TemplateParams | None = None) -> dict:
             {"op": "PUSH_F32", "value": p.wp_arrival_tolerance},
             {"op": "LT_F"},
             {"op": "JUMP_IF_FALSE", "target": "steer"},
-            # Arrived — halt
-            {"op": "NOP", "flags": "0x80", "operand1": 1, "operand2": 1, "label": "arrived"},
-            # Not arrived — steer toward waypoint
+            # Close enough — zero rudder
+            {"op": "PUSH_F32", "value": 0.0},
+            {"op": "CLAMP_F", "lo": p.rudder_min, "hi": p.rudder_max},
+            {"op": "WRITE_PIN", "arg": p.rudder_pin},
+            {"op": "NOP", "flags": "0x80", "operand1": 1, "operand2": 1},
+            # Far from waypoint — steer toward it
             {"op": "READ_PIN", "arg": p.compass_pin, "label": "steer"},
             {"op": "PUSH_F32", "value": p.wp_target_heading},
             {"op": "SUB_F"},
             {"op": "CLAMP_F", "lo": p.rudder_min, "hi": p.rudder_max},
             {"op": "WRITE_PIN", "arg": p.rudder_pin},
-            {"op": "JUMP", "target": "arrived"},
+            {"op": "NOP", "flags": "0x80", "operand1": 1, "operand2": 1},
         ],
     }
 

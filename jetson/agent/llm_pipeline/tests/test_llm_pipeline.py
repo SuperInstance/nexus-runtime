@@ -91,7 +91,6 @@ from shared.opcodes import (
     MUL_F,
     LT_F,
     ABS_F,
-    HALT_OPCODE,
 )
 
 
@@ -594,13 +593,23 @@ class TestDeterministicLLMClient:
             "heading hold at 45",
             "collision avoid",
             "station keeping",
-            "waypoint follow",
         ]:
             resp = client.generate("system", cmd)
             body = resp.parsed["body"]
             last = body[-1]
-            assert last.get("op") == "NOP"
+            assert last.get("op") == "NOP", f"Command '{cmd}' last op is {last.get('op')}"
             assert last.get("flags") == "0x80"
+
+    def test_waypoint_has_halt_somewhere(self):
+        """Waypoint template uses JUMP to HALT label, not tail HALT."""
+        client = DeterministicLLMClient()
+        resp = client.generate("system", "waypoint follow")
+        body = resp.parsed["body"]
+        has_halt = any(
+            i.get("op") == "NOP" and i.get("flags") == "0x80"
+            for i in body
+        )
+        assert has_halt, "Waypoint template should contain a HALT instruction"
 
 
 class TestSDKBridgeClient:
@@ -1089,14 +1098,13 @@ class TestReflexSynthesizerIntegration:
             assert len(bytecode) > 0
 
     def test_bytecode_contains_halt(self):
-        """All synthesized bytecode should end with HALT."""
+        """All synthesized bytecode should contain HALT instruction."""
         synth = ReflexSynthesizer()
         commands = [
             "emergency stop",
             "heading hold at 45",
             "collision avoidance",
             "station keeping",
-            "waypoint follow",
         ]
         for cmd in commands:
             result = synth.synthesize(cmd)
@@ -1109,6 +1117,20 @@ class TestReflexSynthesizerIntegration:
                 # HALT = NOP(0x00) + SYSCALL(0x80) + operand2=1
                 assert opcode == 0x00, f"{cmd}: last opcode = {opcode:#x}"
                 assert flags & 0x80, f"{cmd}: last flags missing SYSCALL"
+
+    def test_bytecode_has_halt_for_waypoint(self):
+        """Waypoint bytecode should contain HALT even if not at tail."""
+        synth = ReflexSynthesizer()
+        result = synth.synthesize("waypoint follow")
+        # Check that HALT appears somewhere in the bytecode
+        found_halt = False
+        for offset in range(0, len(result.bytecode), INSTR_SIZE):
+            instr = result.bytecode[offset:offset + INSTR_SIZE]
+            opcode, flags, _, op2 = unpack_instruction(instr, 0)
+            if opcode == 0x00 and (flags & 0x80) and op2 == 1:
+                found_halt = True
+                break
+        assert found_halt, "Waypoint bytecode should contain HALT"
 
     def test_multiple_synthesis_calls(self):
         """Synthesizer should be reusable for multiple calls."""

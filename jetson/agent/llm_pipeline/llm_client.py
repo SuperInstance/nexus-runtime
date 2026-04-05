@@ -492,6 +492,9 @@ class SDKBridgeClient(LLMClient):
 
     def is_available(self) -> bool:
         """Check if Node.js and the helper script are available."""
+        import os
+        if not os.path.exists(self._node_path):
+            return False
         try:
             result = subprocess.run(
                 ["node", "--version"],
