@@ -1,0 +1,18 @@
+{
+  "vessel_id": "nexus-vessel-001",
+  "repo_path": "/opt/nexus-runtime",
+  "heartbeat_interval": 300,
+  "telemetry_batch_size": 100,
+  "trust_reporting": true,
+  "github_token": null,
+  "github_repo": "SuperInstance/nexus-vessel-001",
+  "serial_port": "/dev/ttyUSB0",
+  "serial_baud": 115200,
+  "agent_dir_name": ".agent",
+  "next_file_name": "next",
+  "done_file_name": "done",
+  "identity_file_name": "identity",
+  "max_mission_retries": 3,
+  "mission_timeout_seconds": 120,
+  "log_level": "INFO"
+}
