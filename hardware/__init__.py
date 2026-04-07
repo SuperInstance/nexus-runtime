@@ -18,7 +18,7 @@ Supported Platform Families (50+ board configs across 11 families)
 - **BeagleBone**: Black, AI-64
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 # Canonical board registry — one source of truth
 _BOARD_CATALOG: dict[str, list[str]] = {

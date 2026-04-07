@@ -6,10 +6,13 @@ over the NEXUS wire protocol via serial (RS-422).
 
 from __future__ import annotations
 
+import logging
 import struct
 import time
 from enum import IntEnum
 from typing import Optional, Callable
+
+logger = logging.getLogger(__name__)
 
 from .frame import FrameParser, parse_frame_header, FRAME_MAX_PAYLOAD
 from .cobs import cobs_encode, cobs_decode
@@ -165,8 +168,8 @@ class NodeClient:
         if self._serial:
             try:
                 self._serial.close()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("Error closing serial connection: %s", e)
             self._serial = None
         self._connected = False
 
@@ -325,8 +328,8 @@ class NodeClient:
                 if data:
                     frames = self._parser.feed(data)
                     return [parse_frame_header(f) for f in frames]
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("Error reading from serial: %s", e)
         return []
 
     @property

@@ -4,10 +4,13 @@ Implements pilot modes, control computation, waypoint following,
 station keeping, emergency handling, and control smoothing.
 """
 
+import logging
 from dataclasses import dataclass, field
 from enum import Enum
 from math import cos, sin
 from typing import List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 from .geospatial import Coordinate, GeoCalculator
 from .collision import CollisionAvoidance, CollisionThreat, VesselState
@@ -59,6 +62,7 @@ class Autopilot:
 
     def set_mode(self, mode: PilotMode) -> None:
         """Set the autopilot operating mode."""
+        logger.info("Autopilot mode changed: %s -> %s", self.mode.name, mode.name)
         self.mode = mode
 
     def get_mode(self) -> PilotMode:
@@ -81,6 +85,12 @@ class Autopilot:
 
         # Speed error
         speed_error = target_state.speed - current_state.speed
+
+        if abs(heading_error) > 30.0:
+            logger.warning(
+                "Large heading error: %.1f degrees (current=%.1f, target=%.1f)",
+                heading_error, current_state.heading, target_state.heading,
+            )
 
         # PD control for heading
         rudder = max(-1.0, min(1.0, heading_error / 45.0))
@@ -202,6 +212,7 @@ class Autopilot:
 
         Returns a PilotCommand with zero thrust and rudder centered.
         """
+        logger.error("Emergency stop activated")
         return PilotCommand(
             thrust=0.0,
             rudder=0.0,

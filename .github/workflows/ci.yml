@@ -1,15 +1,50 @@
 name: CI
+
 on:
   push:
     branches: [main]
+  pull_request:
 
 jobs:
-  test:
+  python-tests:
+    name: Python Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - run: pip install pytest jsonschema
-      - run: cd jetson && python -m pytest -v --tb=short
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install pytest ruff mypy
+      - name: Run tests
+        run: python -m pytest --tb=short -q
+
+  firmware-tests:
+    name: Firmware Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y gcc cmake make
+      - name: Build and run firmware tests
+        run: |
+          mkdir -p tests/firmware/build
+          cd tests/firmware/build
+          cmake .. -DCMAKE_SOURCE_DIR=${{ github.workspace }}
+          make -j$(nproc)
+          ./test_firmware
+
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install linters
+        run: pip install ruff mypy
+      - name: Ruff check
+        run: ruff check nexus/ jetson/
+      - name: Mypy type check
+        run: mypy nexus/ jetson/

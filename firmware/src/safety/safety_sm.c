@@ -84,12 +84,6 @@ safety_state_t safety_sm_process_event(safety_sm_t *sm, safety_event_t event, ui
         case SAFETY_EVT_TRUST_VIOLATION:
             /* Check boot counter for FAULT transition */
             {
-                /* Record this boot event */
-                if (event == SAFETY_EVT_BOOT_COMPLETE) {
-                    sm->boot_times_ms[sm->boot_count % 5] = tick_ms;
-                    sm->boot_count++;
-                }
-
                 /* Count boots within the last 10 minutes */
                 uint32_t recent_boots = 0;
                 for (uint32_t i = 0; i < 5 && i < sm->boot_count; i++) {
@@ -114,7 +108,11 @@ safety_state_t safety_sm_process_event(safety_sm_t *sm, safety_event_t event, ui
         case SAFETY_EVT_HEARTBEAT_MISS:
         case SAFETY_EVT_HEARTBEAT_RECOVER:
         case SAFETY_EVT_OVERCURRENT:
+            break;
         case SAFETY_EVT_BOOT_COMPLETE:
+            /* Record boot time for FAULT boot-rate detection */
+            sm->boot_times_ms[sm->boot_count % 5] = tick_ms;
+            sm->boot_count++;
             break;
         }
         break;

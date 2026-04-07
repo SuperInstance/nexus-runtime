@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 import os
 import struct
 import time
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -35,8 +38,10 @@ class MessageAuthenticator:
     NONCE_LENGTH = 16
     MAX_AGE_SECONDS = 300.0  # 5 minutes
 
+    MAX_NONCE_ENTRIES = 10000
+
     def __init__(self) -> None:
-        self._seen_nonces: Set[str] = set()
+        self._seen_nonces: Dict[str, float] = {}  # nonce -> timestamp
         self._seen_messages: List[MessageEnvelope] = []
 
     @staticmethod
@@ -95,8 +100,9 @@ class MessageAuthenticator:
         fresh = (time.time() - envelope.timestamp) <= age_limit
         replay = envelope.nonce in self._seen_nonces
         if sig_valid and not replay:
-            self._seen_nonces.add(envelope.nonce)
+            self._seen_nonces[envelope.nonce] = time.time()
             self._seen_messages.append(envelope)
+            self._cleanup_stale_nonces()
         return AuthResult(
             verified=sig_valid and not replay,
             sender_id=envelope.sender_id,
@@ -113,12 +119,31 @@ class MessageAuthenticator:
         store = seen_messages if seen_messages is not None else self._seen_nonces
         return envelope.nonce in store
 
+    def _cleanup_stale_nonces(self) -> None:
+        """Remove nonces older than MAX_AGE_SECONDS and enforce max size."""
+        now = time.time()
+        cutoff = now - self.MAX_AGE_SECONDS
+
+        # Remove expired nonces
+        stale = [nonce for nonce, ts in self._seen_nonces.items() if ts < cutoff]
+        for nonce in stale:
+            del self._seen_nonces[nonce]
+
+        # If still over max, evict oldest entries
+        if len(self._seen_nonces) > self.MAX_NONCE_ENTRIES:
+            sorted_nonces = sorted(self._seen_nonces.items(), key=lambda x: x[1])
+            excess = len(self._seen_nonces) - self.MAX_NONCE_ENTRIES
+            for nonce, _ in sorted_nonces[:excess]:
+                del self._seen_nonces[nonce]
+
     def get_seen_count(self) -> int:
         return len(self._seen_nonces)
 
     def clear_seen(self) -> None:
+        count = len(self._seen_nonces)
         self._seen_nonces.clear()
         self._seen_messages.clear()
+        logger.info("Cleared %d seen nonces and messages", count)
 
 
 class KeyManager:

@@ -7,11 +7,15 @@ efficiency scoring.
 
 from __future__ import annotations
 
+import logging
 import math
+import os
 import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 
 class Severity(Enum):
@@ -88,23 +92,124 @@ class ResourceMonitor:
     def take_snapshot(self) -> ResourceSnapshot:
         """Capture a resource snapshot.
 
-        Uses synthetic data suitable for testing / simulation.
-        Replace with OS-specific calls in production.
+        Reads actual system metrics on Linux via /proc/stat and os.statvfs.
+        Falls back to synthetic zeros with a warning if /proc/stat is unavailable.
         """
+        cpu_percent = 0.0
+        memory_used = 0.0
+        memory_total = 1.0
+        disk_io = 0.0
+        open_files = 0
+        thread_count = 1
+
+        if os.path.exists("/proc/stat"):
+            try:
+                # --- CPU: parse /proc/stat (first line, aggregate) ---
+                cpu_percent = self._read_cpu_percent()
+
+                # --- Memory: parse /proc/meminfo ---
+                memory_used, memory_total = self._read_memory()
+
+                # --- Disk: use os.statvfs on root ---
+                disk_io = self._read_disk_usage()
+
+                # --- Open files: count fd entries in /proc/self/fd ---
+                open_files = self._count_open_fds()
+
+                # --- Threads: count "Threads:" in /proc/self/status ---
+                thread_count = self._read_thread_count()
+
+            except Exception as exc:
+                logger.warning("Failed to read system metrics, using zeros: %s", exc)
+        else:
+            logger.warning(
+                "/proc/stat not available -- using synthetic zero metrics. "
+                "This is expected on non-Linux platforms."
+            )
+
         snap = ResourceSnapshot(
             timestamp=time.time(),
-            cpu_percent=0.0,
-            memory_used=0.0,
-            memory_total=100.0,
-            disk_io=0.0,
+            cpu_percent=cpu_percent,
+            memory_used=memory_used,
+            memory_total=memory_total,
+            disk_io=disk_io,
             network_io=0.0,
-            open_files=0,
-            thread_count=1,
+            open_files=open_files,
+            thread_count=thread_count,
         )
         self._snapshots.append(snap)
         for cb in self._callbacks:
             cb(snap)
         return snap
+
+    # ------------------------------------------------------------------
+    # Platform-specific helpers (Linux /proc)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _read_cpu_percent() -> float:
+        """Read aggregate CPU usage from /proc/stat (single-sample estimate)."""
+        with open("/proc/stat", "r") as fh:
+            line = fh.readline()
+        # Format: cpu  user nice system idle iowait irq softirq steal guest guest_nice
+        parts = line.split()
+        if len(parts) < 5:
+            return 0.0
+        values = [int(v) for v in parts[1:]]
+        idle = values[3] + (values[4] if len(values) > 4 else 0)
+        total = sum(values)
+        if total <= 0:
+            return 0.0
+        return round((1.0 - idle / total) * 100.0, 1)
+
+    @staticmethod
+    def _read_memory() -> tuple:
+        """Return (used_bytes, total_bytes) from /proc/meminfo."""
+        meminfo = {}
+        with open("/proc/meminfo", "r") as fh:
+            for raw_line in fh:
+                key, val = raw_line.split(":", 1)
+                num = val.strip().split()[0]
+                meminfo[key.strip()] = int(num) * 1024  # kB -> bytes
+        total = meminfo.get("MemTotal", 0)
+        free = meminfo.get("MemFree", 0)
+        buffers = meminfo.get("Buffers", 0)
+        cached = meminfo.get("Cached", 0)
+        used = max(0, total - free - buffers - cached)
+        return float(used), float(max(total, 1))
+
+    @staticmethod
+    def _read_disk_usage() -> float:
+        """Return disk usage percent for the root filesystem via os.statvfs."""
+        try:
+            st = os.statvfs("/")
+            total = st.f_blocks * st.f_frsize
+            used = (st.f_blocks - st.f_bfree) * st.f_frsize
+            if total <= 0:
+                return 0.0
+            return round((used / total) * 100.0, 1)
+        except OSError:
+            return 0.0
+
+    @staticmethod
+    def _count_open_fds() -> int:
+        """Count open file descriptors via /proc/self/fd."""
+        try:
+            return len(os.listdir("/proc/self/fd"))
+        except OSError:
+            return 0
+
+    @staticmethod
+    def _read_thread_count() -> int:
+        """Read thread count from /proc/self/status."""
+        try:
+            with open("/proc/self/status", "r") as fh:
+                for line in fh:
+                    if line.startswith("Threads:"):
+                        return int(line.split(":")[1].strip())
+        except (OSError, ValueError, IndexError):
+            pass
+        return 1
 
     def take_custom_snapshot(self, **kwargs: Any) -> ResourceSnapshot:
         """Create a snapshot with custom values for testing."""

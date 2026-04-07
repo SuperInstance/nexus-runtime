@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import math
 import random
 from dataclasses import dataclass, field
+
+logger = logging.getLogger(__name__)
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 
@@ -110,6 +113,10 @@ class MultiObjectiveOptimizer:
                 non_dominated_indices.append(i)
 
         pareto_solutions = [solutions[i] for i in non_dominated_indices]
+        logger.info(
+            "Pareto front computed: %d non-dominated / %d total solutions, %d objectives",
+            len(non_dominated_indices), len(solutions), len(objectives),
+        )
         return ParetoFront(
             solutions=pareto_solutions,
             objectives=obj_names,
@@ -129,6 +136,7 @@ class MultiObjectiveOptimizer:
         extreme points.  The point with maximum distance is the knee.
         """
         if not pareto_front.solutions:
+            logger.warning("Cannot find knee point: empty Pareto front")
             return None
 
         # Evaluate all pareto solutions
@@ -207,7 +215,12 @@ class MultiObjectiveOptimizer:
             raise ValueError("Weights length must match objectives length")
 
         if method == "weighted_sum":
-            return sum(w * v for w, v in zip(weights, objective_values))
+            score = sum(w * v for w, v in zip(weights, objective_values))
+            logger.info(
+                "Decision scalarized (weighted_sum) with score=%.4f across %d objectives",
+                score, len(objective_values),
+            )
+            return score
 
         if method == "weighted_chebyshev":
             # Normalize values for Chebyshev

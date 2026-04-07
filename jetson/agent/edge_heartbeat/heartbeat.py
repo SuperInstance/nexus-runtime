@@ -14,6 +14,8 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 from typing import Any
 
 from agent.edge_heartbeat.config import HeartbeatConfig, load_config
@@ -315,8 +317,8 @@ class EdgeHeartbeat:
                     )
                     try:
                         append_done(self.agent_dir, popped, bad_result)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        logger.warning("Failed to write mission result to done queue: %s", e)
             self.state_manager.record_error()
             # Don't fail the phase — skip bad mission and continue idle
             duration = time.time() - start

@@ -158,9 +158,6 @@ class SecretManager:
 
     def _generate_random_value(self, length: int = 32) -> str:
         """Generate a cryptographically random secret value."""
+        import secrets as _secrets
         alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
-        chars = []
-        for _ in range(length):
-            idx = os.urandom(1)[0] % len(alphabet)
-            chars.append(alphabet[idx])
-        return "".join(chars)
+        return "".join(_secrets.choice(alphabet) for _ in range(length))

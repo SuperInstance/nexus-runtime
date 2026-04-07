@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="nexus-sdk",
-    version="0.1.0",
+    version="0.2.1",
     description="NEXUS distributed intelligence platform for marine robotics",
     author="NEXUS Team",
     python_requires=">=3.11",

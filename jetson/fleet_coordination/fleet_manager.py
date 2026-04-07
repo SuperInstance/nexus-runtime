@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import math
 import time
 from dataclasses import dataclass, field
+
+logger = logging.getLogger(__name__)
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -96,6 +99,7 @@ class FleetManager:
         self._vessels[vid] = status
         self._connectivity[vid] = []
         self._touch()
+        logger.info("Vessel registered: %s (fleet size now %d)", vid, len(self._vessels))
         return status
 
     def deregister_vessel(self, vessel_id: str) -> bool:
@@ -103,6 +107,7 @@ class FleetManager:
         if vessel_id not in self._vessels:
             return False
         del self._vessels[vessel_id]
+        logger.info("Vessel deregistered: %s", vessel_id)
         # Clean connectivity references
         if vessel_id in self._connectivity:
             del self._connectivity[vessel_id]
@@ -236,6 +241,12 @@ class FleetManager:
                     ))
 
         self._anomaly_history.extend(anomalies)
+        if anomalies:
+            logger.warning(
+                "Detected %d fleet anomalies: %s",
+                len(anomalies),
+                ", ".join(a.anomaly_type for a in anomalies),
+            )
         return anomalies
 
     def get_anomaly_history(self) -> List[AnomalyRecord]:

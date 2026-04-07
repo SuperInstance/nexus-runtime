@@ -4,7 +4,6 @@
  * Stack machine with 256-entry stack, float32 arithmetic,
  * 8-byte fixed instructions, and deterministic execution.
  * Zero heap allocation - all memory is statically sized.
-#include <stdint.h>
  *
  * VM state total: ~5.4 KB (well within 512KB SRAM budget on ESP32-S3).
  */

@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 from copy import deepcopy
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
+
+logger = logging.getLogger(__name__)
 
 from .schema import ConfigSchema
 
@@ -158,6 +161,7 @@ class ConfigLoader:
         try:
             return float(value)
         except ValueError:
+            logger.debug("Could not coerce config value %r to int or float, keeping as string", value)
             pass
         return value
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 import time
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set
@@ -39,7 +40,14 @@ class AuthManager:
     as ``base64url({header}.{payload}.{signature})`` using only stdlib.
     """
 
-    def __init__(self, secret: str = "nexus-default-secret") -> None:
+    def __init__(self, secret: str | None = None) -> None:
+        if secret is None:
+            secret = os.environ.get("NEXUS_HMAC_SECRET")
+        if not secret:
+            raise ValueError(
+                "HMAC secret must be provided either via the 'secret' parameter "
+                "or the NEXUS_HMAC_SECRET environment variable"
+            )
         self._secret = secret.encode("utf-8")
         self._api_keys: Dict[str, APIKey] = {}        # key_id -> APIKey
         self._key_lookup: Dict[str, str] = {}          # raw_key -> key_id
@@ -47,8 +55,15 @@ class AuthManager:
         self._revoked: Set[str] = set()                # revoked tokens
 
     @staticmethod
-    def hash_key(key: str, secret: str = "nexus-default-secret") -> str:
+    def hash_key(key: str, secret: str | None = None) -> str:
         """Compute HMAC-SHA256 hash of a raw API key."""
+        if secret is None:
+            secret = os.environ.get("NEXUS_HMAC_SECRET")
+        if not secret:
+            raise ValueError(
+                "HMAC secret must be provided either via the 'secret' parameter "
+                "or the NEXUS_HMAC_SECRET environment variable"
+            )
         return hmac.new(
             secret.encode("utf-8"), key.encode("utf-8"), hashlib.sha256
         ).hexdigest()

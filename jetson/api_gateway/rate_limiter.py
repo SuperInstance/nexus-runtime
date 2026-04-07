@@ -42,6 +42,9 @@ class RateLimiter:
     up to ``burst_size + requests_per_window`` maximum.
     """
 
+    _PRUNE_INTERVAL = 1000  # auto-prune every N checks
+    _PRUNE_MAX_AGE = 3600.0  # prune buckets idle for 1 hour
+
     def __init__(self, config: Optional[RateLimitConfig] = None) -> None:
         self._config = config or RateLimitConfig()
         self._buckets: Dict[str, _BucketState] = {}
@@ -72,6 +75,8 @@ class RateLimiter:
         Returns a ``RateLimitResult`` with all rate limit metadata.
         """
         self._total_checks += 1
+        if self._total_checks % self._PRUNE_INTERVAL == 0:
+            self.prune_inactive(self._PRUNE_MAX_AGE)
         cfg = config or self._get_config(identity)
         now = time.time()
         max_tokens = cfg.burst_size + cfg.requests_per_window

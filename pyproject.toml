@@ -1,6 +1,6 @@
 [project]
 name = "nexus-runtime"
-version = "0.2.0"
+version = "0.2.1"
 description = "NEXUS distributed intelligence platform for marine robotics"
 requires-python = ">=3.11"
 

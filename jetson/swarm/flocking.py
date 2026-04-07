@@ -7,8 +7,11 @@ swarm agents, plus obstacle avoidance and full flock simulation.
 
 from __future__ import annotations
 
+import logging
 import math
 import random
+
+logger = logging.getLogger(__name__)
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
@@ -124,6 +127,12 @@ class FlockingBehavior:
                 steer_x = steer_x / mag * self.params.max_speed - agent.vx
                 steer_y = steer_y / mag * self.params.max_speed - agent.vy
                 agent.limit_force(steer_x, steer_y)
+                sep_mag = math.hypot(steer_x, steer_y)
+                if sep_mag > agent.max_force * 0.8:
+                    logger.warning(
+                        "Separation force near limit for agent %s: %.2f/%.2f",
+                        agent.agent_id, sep_mag, agent.max_force,
+                    )
                 return agent.limit_force(steer_x, steer_y)
         return (0.0, 0.0)
 
@@ -251,6 +260,11 @@ class FlockSimulation:
                               flock_force[1] + obs_force[1])
             agent.update(dt)
         self.step_count += 1
+        if self.step_count % 100 == 0:
+            logger.info(
+                "Flock step %d complete, %d agents, %d obstacles",
+                self.step_count, len(self.agents), len(self.obstacles),
+            )
 
     def run(self, steps: int, dt: float = 1.0) -> List[Dict[str, Tuple[float, float]]]:
         """
