@@ -29,6 +29,47 @@ from hardware.arduino.config_mega import (
     MegaConfig,
     get_mega_config,
 )
+from hardware.arduino.config_nano import (
+    BoardConfig as NanoBoardConfig,
+    SerialConfig as NanoSerialConfig,
+    WireProtocolConfig as NanoWireProtocolConfig,
+    PinMapping as NanoPinMapping,
+    InterfacePins as NanoInterfacePins,
+    NanoConfig,
+    get_nano_config,
+)
+from hardware.arduino.config_due import (
+    BoardConfig as DueBoardConfig,
+    SerialConfig as DueSerialConfig,
+    WireProtocolConfig as DueWireProtocolConfig,
+    NexusEdgeConfig as DueNexusEdgeConfig,
+    PinMapping as DuePinMapping,
+    InterfacePins as DueInterfacePins,
+    DueConfig,
+    get_due_config,
+)
+from hardware.arduino.config_mkr_wifi import (
+    BoardConfig as MKRBoardConfig,
+    SerialConfig as MKRSerialConfig,
+    WireProtocolConfig as MKRWireProtocolConfig,
+    WiFiConfig as MKRWiFiNetworkConfig,
+    NexusBridgeConfig as MKRNexusBridgeConfig,
+    PinMapping as MKRPinMapping,
+    InterfacePins as MKRInterfacePins,
+    MKRWiFiConfig,
+    get_mkr_wifi_config,
+)
+from hardware.arduino.config_nano33_iot import (
+    BoardConfig as Nano33IoTBoardConfig,
+    SerialConfig as Nano33IoTSerialConfig,
+    WireProtocolConfig as Nano33IoTWireProtocolConfig,
+    WiFiConfig as Nano33IoTWiFiConfig,
+    NexusMeshConfig as Nano33IoTNexusMeshConfig,
+    PinMapping as Nano33IoTPinMapping,
+    InterfacePins as Nano33IoTInterfacePins,
+    Nano33IoTConfig,
+    get_nano33_iot_config,
+)
 from hardware.arduino.sensor_drivers import (
     GPSSensorConfig,
     IMUSensorConfig,
@@ -55,6 +96,43 @@ __all__ = [
     "MegaPinMapping",
     "MegaConfig",
     "get_mega_config",
+    # Nano
+    "NanoBoardConfig",
+    "NanoSerialConfig",
+    "NanoWireProtocolConfig",
+    "NanoPinMapping",
+    "NanoInterfacePins",
+    "NanoConfig",
+    "get_nano_config",
+    # Due
+    "DueBoardConfig",
+    "DueSerialConfig",
+    "DueWireProtocolConfig",
+    "DueNexusEdgeConfig",
+    "DuePinMapping",
+    "DueInterfacePins",
+    "DueConfig",
+    "get_due_config",
+    # MKR WiFi 1010
+    "MKRBoardConfig",
+    "MKRSerialConfig",
+    "MKRWireProtocolConfig",
+    "MKRWiFiNetworkConfig",
+    "MKRNexusBridgeConfig",
+    "MKRPinMapping",
+    "MKRInterfacePins",
+    "MKRWiFiConfig",
+    "get_mkr_wifi_config",
+    # Nano 33 IoT
+    "Nano33IoTBoardConfig",
+    "Nano33IoTSerialConfig",
+    "Nano33IoTWireProtocolConfig",
+    "Nano33IoTWiFiConfig",
+    "Nano33IoTNexusMeshConfig",
+    "Nano33IoTPinMapping",
+    "Nano33IoTInterfacePins",
+    "Nano33IoTConfig",
+    "get_nano33_iot_config",
     # Sensors
     "GPSSensorConfig",
     "IMUSensorConfig",
@@ -76,8 +154,10 @@ __all__ = [
 _BOARD_REGISTRY = {
     "uno": ("Arduino Uno R3", get_uno_config),
     "mega": ("Arduino Mega 2560", get_mega_config),
-    "nano": ("Arduino Nano", None),         # placeholder — same as Uno
-    "due": ("Arduino Due", None),            # placeholder
+    "nano": ("Arduino Nano", get_nano_config),
+    "due": ("Arduino Due", get_due_config),
+    "mkr_wifi": ("Arduino MKR WiFi 1010", get_mkr_wifi_config),
+    "nano33_iot": ("Arduino Nano 33 IoT", get_nano33_iot_config),
     "leonardo": ("Arduino Leonardo", None),  # placeholder
 }
 
@@ -93,13 +173,14 @@ def get_board_config(board_name: str, **overrides):
     Parameters
     ----------
     board_name : str
-        One of ``"uno"``, ``"mega"``, ``"nano"``, ``"due"``, ``"leonardo"``.
+        One of ``"uno"``, ``"mega"``, ``"nano"``, ``"due"``,
+        ``"mkr_wifi"``, ``"nano33_iot"``, or ``"leonardo"``.
     **overrides
         Keyword overrides forwarded to the board's config constructor.
 
     Returns
     -------
-    UnoConfig | MegaConfig
+    UnoConfig | MegaConfig | NanoConfig | DueConfig | MKRWiFiConfig | Nano33IoTConfig
 
     Raises
     ------

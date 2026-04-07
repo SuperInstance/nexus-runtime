@@ -214,7 +214,7 @@ class TestPi5Summary:
         r = repr(pi5_config)
         assert "BCM2712" in r
         assert "RP1" in r
-        assert "PCIe" in r
+        assert "pcie" in r
 
 
 class TestPi5PeripheralCounts:
