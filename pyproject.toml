@@ -1,6 +1,6 @@
 [project]
 name = "nexus-runtime"
-version = "0.1.0"
+version = "0.2.0"
 description = "NEXUS distributed intelligence platform for marine robotics"
 requires-python = ">=3.11"
 
@@ -18,5 +18,5 @@ warn_unused_configs = true
 disallow_untyped_defs = false
 
 [tool.pytest.ini_options]
-testpaths = ["tests/jetson"]
-pythonpath = ["jetson"]
+testpaths = ["tests/jetson", "hardware"]
+pythonpath = ["jetson", "."]
