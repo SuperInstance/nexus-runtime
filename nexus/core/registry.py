@@ -8,12 +8,15 @@ declare dependencies, and be discovered by other components.
 from __future__ import annotations
 
 import enum
+import logging
 import time
 import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Set, Type, TypeVar
 
 T = TypeVar("T")
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -205,6 +208,7 @@ class ServiceRegistry:
                 if result is not None:
                     info.instance = result
             except Exception:
+                logger.exception("Init hook failed for service '%s'", name)
                 info.state = ServiceState.FAILED
                 return False
 
@@ -236,7 +240,7 @@ class ServiceRegistry:
             try:
                 hook(info)
             except Exception:
-                pass
+                logger.exception("Shutdown hook failed for service '%s'", name)
         info.state = ServiceState.STOPPED
         return True
 

@@ -132,32 +132,6 @@ class AgentRecord:
 
 
 # ---------------------------------------------------------------------------
-# Trust weights
-# ---------------------------------------------------------------------------
-
-@dataclass
-class TrustWeights:
-    """Configurable weights for the INCREMENTS trust formula."""
-
-    alpha: float = 0.35   # T_history weight
-    beta: float = 0.25    # T_capability weight
-    gamma: float = 0.20   # T_latency weight
-    delta: float = 0.20   # T_consistency weight
-
-    def normalize(self) -> "TrustWeights":
-        """Normalize weights so they sum to 1.0."""
-        total = self.alpha + self.beta + self.gamma + self.delta
-        if total == 0:
-            return TrustWeights(0.25, 0.25, 0.25, 0.25)
-        return TrustWeights(
-            alpha=self.alpha / total,
-            beta=self.beta / total,
-            gamma=self.gamma / total,
-            delta=self.delta / total,
-        )
-
-
-# ---------------------------------------------------------------------------
 # Trust Engine
 # ---------------------------------------------------------------------------
 

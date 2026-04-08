@@ -9,8 +9,11 @@ handling partial reads, buffer splits, and framing errors.
 from __future__ import annotations
 
 import enum
+import logging
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 from nexus.wire.protocol import (
     PREAMBLE, PREAMBLE_INT, FRAME_HEADER_SIZE, CRC_SIZE,
@@ -157,6 +160,7 @@ class FrameParser:
 
             if length > self._max_frame_size:
                 self._errors.append(f"Frame too large: {length} bytes")
+                logger.warning("Frame too large: %d bytes (max %d)", length, self._max_frame_size)
                 # Skip this preamble and try again
                 self._buffer = self._buffer[2:]
                 continue
@@ -180,6 +184,7 @@ class FrameParser:
 
             if not CRC16.verify(raw_payload, crc_received):
                 self._errors.append(f"CRC mismatch in frame")
+                logger.warning("CRC mismatch in frame")
                 continue
 
             try:
@@ -188,6 +193,7 @@ class FrameParser:
                 self._frames.append(ParsedFrame(message=msg, raw_frame=frame_bytes, consumed_bytes=total))
             except Exception as e:
                 self._errors.append(f"Frame decode error: {e}")
+                logger.warning("Frame decode error: %s", e)
 
     def feed_and_parse(self, data: bytes) -> List[Message]:
         """Convenience: feed data and return all extracted messages."""

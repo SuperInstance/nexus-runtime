@@ -18,9 +18,12 @@ Architecture features:
 from __future__ import annotations
 
 import enum
+import logging
 import struct
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Sequence
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -260,6 +263,7 @@ class Executor:
 
     def _execute(self, insn: Instruction) -> None:
         """Dispatch and execute a single instruction."""
+        logger.debug("Executing %s", insn)
 
         def _reg(idx: int) -> int:
             if not 0 <= idx < NUM_REGISTERS:

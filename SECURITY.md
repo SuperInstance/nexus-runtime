@@ -16,7 +16,7 @@ to maintain the safety of the project and its users.
 
 **Please do not open a public issue.**
 
-Instead, send a report to [INSERT SECURITY CONTACT EMAIL] with the following:
+Instead, send a report to security@nexus-runtime.dev with the following:
 
 1. **Description** of the vulnerability
 2. **Steps to reproduce** the issue

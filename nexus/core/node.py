@@ -11,10 +11,13 @@ hooks for lifecycle events.
 from __future__ import annotations
 
 import enum
+import logging
 import time
 import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Set
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -180,7 +183,7 @@ class Node:
             try:
                 hook(self, old_state, new_state)
             except Exception:
-                pass  # hooks should not break lifecycle
+                logger.exception("Transition hook failed during %s → %s", old_state.value, new_state.value)
 
         return True
 

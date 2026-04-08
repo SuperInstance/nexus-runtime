@@ -11,3 +11,12 @@ A comprehensive framework for autonomous marine systems featuring:
 
 __version__ = "0.2.1"
 __author__ = "NEXUS Team"
+
+from nexus.exceptions import (
+    NexusError, VMError, VMHaltError, VMStackOverflow, VMStackUnderflow,
+    InvalidOpcode, VMMemoryError, VMDivisionByZero,
+    WireError, FrameDecodeError, CRCMismatchError, FrameTooLargeError,
+    TrustError, InsufficientTrust, AgentNotFoundError,
+    NodeError, InvalidTransitionError, ServiceNotFoundError,
+    SafetyViolationError,
+)

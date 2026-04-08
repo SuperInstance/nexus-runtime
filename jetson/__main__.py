@@ -7,6 +7,8 @@ and inspect basic system information.
 import logging
 import sys
 
+from nexus import __version__
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
@@ -14,7 +16,7 @@ logging.basicConfig(
 
 def main() -> None:
     logger = logging.getLogger("jetson")
-    logger.info("NEXUS Runtime v0.1.0")
+    logger.info(f"NEXUS Runtime v{__version__}")
 
     # Verify key submodules can be imported
     modules = [
