@@ -15,9 +15,13 @@
 
 ---
 
-NEXUS is a distributed intelligence platform for industrial marine robotics where **LLM agents — not humans — are the primary authors of control code**. Agents synthesize intent into bytecode, which runs on a deterministic VM embedded on ESP32-S3 microcontrollers, while AI cognition and trust-based safety enforcement run on edge GPUs (Jetson Orin Nano).
+## Overview
 
-> **The key insight**: instead of hand-coding every control loop, NEXUS lets LLM agents express *intent* (e.g., "maintain 2m depth, avoid obstacles, surface if battery &lt; 15%"), which is compiled into verified bytecode and executed with hardware-enforced safety guarantees.
+NEXUS Runtime is the **executable core** of the NEXUS distributed intelligence platform — a Python package (v0.2.1) that provides the complete software stack for autonomous marine robotics fleets. Where the companion [Edge-Native](https://github.com/nexus-platform/Edge-Native) repository defines *what to build* through exhaustive specifications, NEXUS Runtime is *what runs*: a deterministic bytecode virtual machine, a COBS-framed wire protocol, a multi-dimensional trust engine, a fleet orchestrator, and hardware drivers for 50+ embedded boards.
+
+The runtime embodies a radical inversion of the conventional robotics paradigm: **LLM agents — not humans — are the primary authors of control code**. Agents express intent in natural language (e.g., "maintain 2m depth, avoid obstacles, surface if battery < 15%"), which a reflex compiler translates into verified bytecode executed on ESP32-S3 microcontrollers. Meanwhile, AI cognition and trust-based safety enforcement run on edge GPUs (Jetson Orin Nano). The result is a system where each "limb" (ESP32 node) thinks, reacts, and learns independently — like a biological ribosome translating mRNA into proteins without comprehension.
+
+The runtime ships with 2,287 passing tests across unit, integration, and hardware-in-loop suites, targets Python 3.11+, and supports 11 platform families spanning microcontrollers, edge GPUs, and single-board computers.
 
 ## Animated Pipeline
 
@@ -47,26 +51,78 @@ NEXUS is a distributed intelligence platform for industrial marine robotics wher
 ## Architecture
 
 ```
-╔══════════════════════════════════════════════════════════════════════╗
-║  Tier 3: CLOUD                                                       ║
-║  Heavy model training, fleet management, mission planning             ║
-║  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐             ║
-║  │  Training    │  │  Fleet Mgmt  │  │  Digital Twin    │             ║
-║  └──────┬──────┘  └──────┬───────┘  └────────┬─────────┘             ║
-╠═════════╪════════════════╪════════════════════╪═════════════════════╣
-║  Tier 2: JETSON (Edge GPU)                                            ║
-║  AI inference, reflex synthesis, trust engine, swarm coordination      ║
-║  ┌──────────┐ ┌────────────┐ ┌──────────┐ ┌────────────────┐         ║
-║  │ Vision   │ │ Trust Eng  │ │ Swarm    │ │ Reflex Compiler│         ║
-║  └────┬─────┘ └─────┬──────┘ └────┬─────┘ └───────┬────────┘         ║
-╠══════╪═════════════╪══════════════╪════════════════╪════════════════╣
-║  Tier 1: ESP32-S3 (Microcontroller)                                     ║
-║  Bytecode VM, real-time sensor/actuator control, safety enforcement    ║
-║  ┌──────────┐ ┌────────────┐ ┌──────────┐ ┌────────────────┐         ║
-║  │ 32-op VM │ │ Wire Proto │ │ Safety   │ │ Sensor/Act DRV │         ║
-║  └──────────┘ └────────────┘ └──────────┘ └────────────────┘         ║
-╚══════════════════════════════════════════════════════════════════════╝
+                        ┌─────────────────────────────────────────────────────┐
+                        │  TIER 3: CLOUD                                     │
+                        │  Heavy model training • Fleet management            │
+                        │  Mission planning • Digital twin simulation         │
+                        │                                                     │
+                        │  ┌───────────┐  ┌───────────┐  ┌───────────────┐  │
+                        │  │ Training  │  │ Fleet Mgmt│  │ Digital Twin  │  │
+                        │  └─────┬─────┘  └─────┬─────┘  └──────┬────────┘  │
+                        └────────┼──────────────┼───────────────┼────────────┘
+                                 │   Starlink/   │               │
+                                 │   5G / LTE    │               │
+                        ┌────────┼──────────────┼───────────────┼────────────┐
+                        │  TIER 2: JETSON ORIN NANO (Edge GPU)             │
+                        │  40 TOPS INT8 • 8GB LPDDR5 • AI Inference        │
+                        │                                                     │
+                        │  ┌─────────┐ ┌──────────┐ ┌───────┐ ┌─────────┐   │
+  LLM Agent ────────────┤  │ Vision  │ │  Trust   │ │ Swarm │ │  Reflex │   │
+  Intent NL  ───────────┤  │ Pipeline│ │  Engine  │ │ Coord │ │Compiler │   │
+                        │  └────┬────┘ └────┬─────┘ └───┬───┘ └────┬────┘   │
+                        └───────┼───────────┼───────────┼──────────┼─────────┘
+                                │           │  TRUST    │  BYTECODE │
+                                │           │  SCORES   │  DEPLOY  │
+                        ┌───────┼───────────┼───────────┼──────────┼─────────┐
+                        │  TIER 1: ESP32-S3 (Microcontroller)               │
+                        │  240MHz Dual-Core • 8MB PSRAM • 45 GPIO           │
+                        │                                                     │
+                        │  ┌───────┐ ┌─────────┐ ┌───────┐ ┌───────────┐   │
+                        │  │ 32-op│ │  Wire   │ │Safety │ │ Sensor /  │   │
+                        │  │  VM  │ │ Protocol│ │  SM   │ │ Actuator  │   │
+                        │  └───────┘ └─────────┘ └───────┘ └───────────┘   │
+                        └───────────────────────────────────────────────────┘
+
+                        ┌───────────────────────────────────────────────────┐
+                        │  HARDWARE INTERLOCK (Tier 0)                      │
+                        │  Kill switch • Watchdog IC • Polyfuses            │
+                        │  Response: <1µs  —  operates regardless of FW     │
+                        └───────────────────────────────────────────────────┘
 ```
+
+**Data flow**: An LLM agent expresses intent → Jetson compiles reflex to bytecode → Bytecode validated by 4-tier safety pipeline → Deployed via COBS/CRC-16 wire protocol at 921,600 baud → ESP32-S3 VM executes at 1ms ticks → Sensor data streamed back → Trust engine scores interactions → Fleet orchestrator distributes tasks.
+
+## Core Concepts
+
+### Bytecode VM (`nexus.vm`)
+
+A deterministic, register-based virtual machine with 32 opcodes, 32 registers (16 GP + 16 IO-mapped), 64KB addressable memory, and a 1024-entry hardware stack. Every instruction is 8 bytes, fixed-width, little-endian. The VM enforces cycle budgets (default 100,000 cycles), bounds-checked memory, and IO-register isolation. No dynamic allocation. No garbage collection. Given the same inputs, it produces the same outputs in the same number of cycles — every time.
+
+### INCREMENTS Trust Engine (`nexus.trust`)
+
+A multi-dimensional trust model that computes composite trust scores between agents:
+
+```
+T(a,b,t) = α·T_history + β·T_capability + γ·T_latency + δ·T_consistency
+```
+
+Where `α=0.35, β=0.25, γ=0.20, δ=0.20` by default. Trust decays exponentially toward neutral (0.5) over time, requiring sustained good behavior to maintain high scores. This creates a natural 25:1 loss-to-gain ratio — trust is earned slowly and lost rapidly, ensuring safety.
+
+### Wire Protocol (`nexus.wire`)
+
+A reliable serial communication layer using COBS (Consistent Overhead Byte Stuffing) framing with CRC-16/CCITT-FALSE integrity checks. Supports 28 message types across system, sensor, command, telemetry, trust, swarm, A2A, and data categories. Frame format: `[0xAA55 preamble][length][COBS-encoded payload][CRC-16]`. Maximum frame size: 4096 bytes.
+
+### Fleet Orchestrator (`nexus.orchestrator`)
+
+Manages multi-vessel fleets with task submission, prioritized scheduling, resource-aware assignment, and workload balancing. Tasks have lifecycle states (PENDING → ASSIGNED → IN_PROGRESS → COMPLETED/FAILED/CANCELLED) and four priority levels (LOW, NORMAL, HIGH, CRITICAL). Vessels are matched to tasks via capability profiles and current load.
+
+### Node Lifecycle (`nexus.core.node`)
+
+Every NEXUS node follows a deterministic lifecycle: `INIT → CONNECTING → ACTIVE → DEGRADED → RECOVERY → SHUTDOWN`. Transitions are validated, hookable, and fully auditable. Nodes track health metrics with configurable thresholds and maintain complete state histories.
+
+### Autonomous Agent Behavior (`nexus.aab`)
+
+An agent-first extension to the bytecode format. AAB adds TLV metadata (Intent, Capability, Safety, Trust, Narrative tags) alongside the 8-byte core instructions. On ESP32, metadata is stripped at zero overhead. On Jetson, agents read and reason about the annotations for cooperative decision-making.
 
 ## Quick Start
 
@@ -78,7 +134,7 @@ pip install -e .
 # Verify installation
 python -c "import nexus; print(f'NEXUS {nexus.__version__}')"
 
-# Run all tests
+# Run all tests (2,287 tests)
 python -m pytest --tb=short -q
 
 # Hardware discovery (no hardware required)
@@ -87,6 +143,151 @@ python -c "from hardware import total_board_count, list_platforms; \
 
 # Try an example
 python examples/bytecode_playground.py
+```
+
+## API Reference
+
+### VM Executor
+
+```python
+from nexus.vm.executor import Executor, Opcodes, Instruction
+
+# Create a VM with IO callbacks
+vm = Executor(
+    program=bytecode,
+    io_read_cb=lambda idx: sensor_values[idx],
+    io_write_cb=lambda idx, val: set_actuator(idx, val),
+)
+
+# Execute
+vm.run(max_cycles=100_000)          # Run until halted or budget
+insn = vm.step()                    # Single-step execution
+state = vm.get_state()              # Snapshot: PC, registers, stack, flags
+
+# IO simulation
+vm.push_recv(42)                    # Feed data to RECV opcode
+msg = vm.pop_send()                 # Retrieve data from SEND opcode
+vm.push_interrupt(3)                # Queue external interrupt
+```
+
+### Trust Engine
+
+```python
+from nexus.trust.engine import TrustEngine, CapabilityProfile
+
+engine = TrustEngine()
+engine.register_agent("AUV-001", capabilities=CapabilityProfile(navigation=0.9, sensing=0.7))
+engine.register_agent("AUV-002", capabilities=CapabilityProfile(sensing=0.95))
+
+# Record interactions
+engine.record_interaction("AUV-001", "AUV-002", success=True, latency_ms=45.0)
+score = engine.get_trust("AUV-001", "AUV-002")    # → 0.0-1.0
+
+# Find best partner
+agent_id, trust = engine.get_most_trusted("AUV-001")
+```
+
+### Wire Protocol
+
+```python
+from nexus.wire.protocol import Message, MessageType, encode_frame, decode_frame
+
+msg = Message(msg_type=MessageType.SENSOR_DATA, source=1, destination=0, payload=data)
+frame = encode_frame(msg)              # → bytes with COBS + CRC-16
+decoded = decode_frame(frame)           # → Message or None (CRC fail)
+
+# Direct CRC and COBS access
+from nexus.wire.protocol import CRC16, COBSCodec
+crc = CRC16.compute(data)              # CRC-16/CCITT-FALSE
+encoded = COBSCodec.encode(data)        # Zero-free encoding
+```
+
+### Fleet Orchestrator
+
+```python
+from nexus.orchestrator.fleet import FleetOrchestrator, VesselInfo, TaskPriority
+
+fleet = FleetOrchestrator()
+fleet.register_vessel(VesselInfo(vessel_id="AUV-001", capabilities={"navigation": 0.9}))
+task = fleet.submit_task("Survey Area A", priority=TaskPriority.HIGH,
+                         required_capabilities={"navigation": 0.7})
+result = fleet.assign_task(task.task_id)   # Auto-selects best vessel
+status = fleet.get_fleet_status()          # Full fleet snapshot
+```
+
+### Node Lifecycle
+
+```python
+from nexus.core.node import Node, HealthMetric
+
+node = Node(node_id="AUV-001", name="Port Scanner")
+node.on_transition(lambda n, old, new: print(f"{old} → {new}"))
+node.start()                                        # INIT → CONNECTING → ACTIVE
+node.add_health_metric(HealthMetric("battery", 85, "%", 20, 100))
+node.report_degraded("Low light conditions")
+node.recover()                                       # RECOVERY → ACTIVE
+```
+
+## Integration
+
+### Python Package Integration
+
+```python
+# pyproject.toml or requirements.txt
+nexus-runtime = ">=0.2.1"
+```
+
+```python
+import nexus
+from nexus.vm import Executor, Assembler
+from nexus.trust import TrustEngine
+from nexus.wire import encode_frame, Message, MessageType
+from nexus.orchestrator import FleetOrchestrator
+from nexus.aab import BehaviorCodec
+```
+
+### Firmware Integration (C)
+
+The Python runtime mirrors the ESP-IDF firmware implementation byte-for-byte. Shared headers in `shared/` define opcodes, instruction formats, and wire protocol constants used by both the Python emulator and the C firmware:
+
+```
+shared/
+├── instruction.h    # 8-byte instruction format (C struct)
+├── opcodes.h        # Opcode enum (C)
+└── opcodes.py       # Opcode enum (Python)
+```
+
+The firmware under `firmware/` is a complete ESP-IDF project with:
+- `firmware/src/core/nexus_vm/` — C VM interpreter (vm_core.c, vm_validate.c, vm_opcodes.c)
+- `firmware/src/core/wire_protocol/` — COBS, CRC-16, frame encode/decode, message dispatch
+- `firmware/src/safety/` — Watchdog, heartbeat, safety state machine, E-stop ISR
+- `firmware/src/drivers/` — Sensor bus (I2C/SPI/1-Wire), actuator drivers, HAL
+
+### Hardware Platform Integration
+
+Deploy to any of the 11 supported platform families using pre-configured profiles:
+
+```python
+from hardware.esp32.config_esp32_s3 import ESP32S3Config
+from hardware.jetson_nano.config_orin_nano import OrinNanoConfig
+from hardware.raspberry_pi.config_pi5 import Pi5Config
+
+# Each config provides: pin_maps, clock_settings, peripheral_drivers, memory_layout
+config = ESP32S3Config()
+print(config.gpio_pins, config.clock_freq, config.flash_size)
+```
+
+### Jetson SDK Integration
+
+The `jetson/` directory provides 38 modules for the cognitive edge layer, organized into 8 categories. Key entry points:
+
+```python
+from jetson.reflex.compiler import ReflexCompiler        # NL → bytecode
+from jetson.adaptive_autonomy.levels import AutonomyLevel # L0-L5 control
+from jetson.swarm.flocking import FlockSimulation          # Multi-agent behavior
+from jetson.navigation.pilot import Pilot                  # Waypoint + collision avoidance
+from jetson.energy.power_budget import PowerBudget         # Energy-aware planning
+from jetson.security.safety_monitor import SafetyMonitor   # Runtime safety checks
 ```
 
 ## Supported Hardware (50+ Boards)
@@ -205,3 +406,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 ## License
 
 [MIT](LICENSE) — Copyright (c) 2025 NEXUS Project
+
+---
+
+<img src="callsign1.jpg" width="128" alt="callsign">
